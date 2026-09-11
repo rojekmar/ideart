@@ -21,8 +21,15 @@ $app = Application::configure(basePath: dirname(__DIR__))
 // podfolderze WEWNĄTRZ katalogu publicznego domeny (bo konto FTP nie może
 // tworzyć folderów poza nim) — czyli prawdziwy public/ to katalog nadrzędny
 // względem aplikacji, nie <projekt>/public jak domyślnie zakłada Laravel.
-// Włączane tylko flagą w .env — lokalny XAMPP działa bez zmian.
-if (env('DEPLOY_SPLIT_PUBLIC', false)) {
+//
+// Wykrywane po samej strukturze plików (NIE przez .env) — w tym miejscu
+// .env jeszcze nie jest wczytany (Dotenv startuje dopiero w bootstrapperach
+// kernela, który odpala się później niż ten plik), więc env() zwróciłoby
+// tu zawsze wartość domyślną.
+$hasOwnPublicDir = is_dir($app->basePath('public'));
+$parentHasIndexPhp = file_exists(dirname($app->basePath()).'/index.php');
+
+if (! $hasOwnPublicDir && $parentHasIndexPhp) {
     $app->usePublicPath(dirname($app->basePath()));
 }
 
