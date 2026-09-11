@@ -56,8 +56,9 @@ jobs:
           mkdir -p deploy_app deploy_public
           shopt -s extglob dotglob
           # Konto FTP na cba.pl nie pozwala tworzyć nowych folderów na
-          # najwyższym poziomie (poza istniejącym public_html) — więc kod
-          # aplikacji trafia DO ŚRODKA public_html, w podfolderze ideart-app/,
+          # najwyższym poziomie — katalogiem domeny jest /ideart.com.pl/
+          # (cba.pl nazywa folder domeny jej nazwą, nie "public_html"). Kod
+          # aplikacji trafia DO ŚRODKA tego katalogu, w podfolderze ideart-app/,
           # zablokowanym dla przeglądarki przez .htaccess (patrz niżej).
           cp -r !(public|deploy_app|deploy_public|node_modules|tests|.git|.github) deploy_app/
           cp -r public/!(hot) deploy_public/ 2>/dev/null || cp -r public/* deploy_public/
@@ -84,13 +85,13 @@ jobs:
       - name: Zainstaluj lftp (pewniejsze tworzenie katalogów niż akcje JS)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: Wgraj kod aplikacji (do public_html/ideart-app/, zablokowany .htaccess)
+      - name: Wgraj kod aplikacji (do ideart.com.pl/ideart-app/, zablokowany .htaccess)
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mkdir -p /public_html/ideart-app; mirror -R --verbose ./deploy_app/ /public_html/ideart-app/; bye"
+          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mkdir -p /ideart.com.pl/ideart-app; mirror -R --verbose ./deploy_app/ /ideart.com.pl/ideart-app/; bye"
 
       - name: Wgraj katalog publiczny domeny
         env:
@@ -98,4 +99,4 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mirror -R --verbose --exclude-glob ideart-app/ --exclude-glob assets/grafiki_animacje/ ./deploy_public/ /public_html/; bye"
+          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mirror -R --verbose --exclude-glob ideart-app/ --exclude-glob assets/grafiki_animacje/ ./deploy_public/ /ideart.com.pl/; bye"
