@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy (FTP — hosting współdzielony cba.pl)
 
 on:
   push:
@@ -15,11 +15,11 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           tools: composer:v2
           coverage: none
 
-      - name: Install Composer dependencies
+      - name: Install Composer dependencies (bez dev, na hostingu nie ma composera)
         run: composer install --no-dev --optimize-autoloader --prefer-dist --no-progress
 
       - name: Setup Node
@@ -33,28 +33,62 @@ jobs:
           npm ci
           npm run build
 
-      - name: Package release
+      - name: Wygeneruj plik .env (na hostingu nie ma jak odpalić artisan)
         run: |
-          tar --exclude='.git' --exclude='node_modules' --exclude='tests' \
-              --exclude='.github' -czf release.tar.gz .
+          {
+            echo "APP_NAME=\"${{ vars.APP_NAME || 'IDEART' }}\""
+            echo "APP_ENV=production"
+            echo "APP_KEY=${{ secrets.APP_KEY }}"
+            echo "APP_DEBUG=false"
+            echo "APP_URL=${{ vars.APP_URL }}"
+            echo "APP_LOCALE=pl"
+            echo "APP_FALLBACK_LOCALE=en"
+            echo "LOG_CHANNEL=stack"
+            echo "LOG_LEVEL=error"
+            echo "SESSION_DRIVER=file"
+            echo "CACHE_STORE=file"
+            echo "QUEUE_CONNECTION=sync"
+            echo "FILESYSTEM_DISK=local"
+          } > .env
 
-      - name: Upload release archive to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          source: 'release.tar.gz'
-          target: '~/'
-          overwrite: true
+      - name: Zbuduj strukturę pod hosting bez SSH (kod poza public_html, reszta w nim)
+        run: |
+          mkdir -p deploy_app deploy_public
+          shopt -s extglob dotglob
+          # wszystko poza folderem public/ trafia do deploy_app (kod aplikacji,
+          # trzymany POZA katalogiem publicznym domeny)
+          cp -r !(public|deploy_app|deploy_public|node_modules|tests|.git|.github) deploy_app/
+          # zawartość public/ trafia do deploy_public (katalog publiczny domeny)
+          cp -r public/!(hot) deploy_public/ 2>/dev/null || cp -r public/* deploy_public/
 
-      - name: Run remote deploy script
-        uses: appleboy/ssh-action@v1.0.3
+          # index.php w katalogu publicznym musi wskazywać na kod aplikacji
+          # leżący jeden poziom wyżej, w folderze ideart-app/ (patrz DEPLOY.md —
+          # dopasuj APP_DIR_NAME, jeśli Twoja struktura na FTP jest inna)
+          APP_DIR_NAME="ideart-app"
+          sed -i "s#__DIR__.'/../storage/framework/maintenance.php'#__DIR__.'/../${APP_DIR_NAME}/storage/framework/maintenance.php'#" deploy_public/index.php
+          sed -i "s#__DIR__.'/../vendor/autoload.php'#__DIR__.'/../${APP_DIR_NAME}/vendor/autoload.php'#" deploy_public/index.php
+          sed -i "s#__DIR__.'/../bootstrap/app.php'#__DIR__.'/../${APP_DIR_NAME}/bootstrap/app.php'#" deploy_public/index.php
+          cat deploy_public/index.php
+
+      - name: Wgraj kod aplikacji (poza katalogiem publicznym domeny)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          script: |
-            bash ${{ secrets.DEPLOY_PATH }}/deploy.sh ${{ secrets.DEPLOY_PATH }}
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy_app/
+          server-dir: ${{ vars.FTP_APP_DIR || '/ideart-app/' }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+
+      - name: Wgraj katalog publiczny domeny
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy_public/
+          server-dir: ${{ vars.FTP_PUBLIC_DIR || '/public_html/' }}
+          exclude: |
+            **/assets/grafiki_animacje/**

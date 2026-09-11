@@ -1,124 +1,97 @@
-# Automatyczne wdrażanie (CI/CD)
+# Automatyczne wdrażanie na cba.pl (hosting współdzielony, bez SSH)
 
-Po każdym `git push` na branch `main` GitHub Actions samodzielnie:
-zbuduje aplikację (composer + npm), wyśle ją na VPS przez SSH i przełączy
-serwer na nową wersję bez przestoju.
+Po każdym `git push` na branch `main` GitHub Actions samodzielnie zbuduje
+aplikację (composer + npm) i wgra ją na hosting **przez FTP** — bez
+potrzeby logowania się na serwer.
 
-Treść portfolio (`public/assets/grafiki_animacje/`) **nie jest częścią
-repozytorium** — jest zbyt duża (500+ MB, w tym pliki wideo grubo ponad
-limit 100 MB/plik na GitHub) i zarządzana bezpośrednio na serwerze przez
-SFTP/rsync, tak jak dotychczas.
+## Dlaczego taka dziwna struktura?
 
-## Jednorazowa konfiguracja serwera (VPS)
+Na zwykłym hostingu nie da się odpalić `php artisan` ani `composer` —
+nie ma terminala. Więc:
 
-Wykonaj raz, zalogowany przez SSH na serwer:
+- **cały kod aplikacji budujemy w GitHub Actions** (tam JEST PHP,
+  composer i node) i wgrywamy gotowe pliki (razem z folderem `vendor/`)
+- **kod Laravela (poza `public/`) NIE może leżeć w katalogu publicznym
+  domeny** — inaczej każdy mógłby wejść np. na `ideart.com.pl/.env` i
+  zobaczyć Twoje hasła. Dlatego trafia do osobnego folderu **obok**
+  katalogu publicznego, a `index.php` w katalogu publicznym tylko się
+  do niego odwołuje.
 
-```bash
-# 1. Struktura katalogów (deploy.sh oczekuje dokładnie takiego układu)
-sudo mkdir -p /var/www/marcin-projekt/{releases,shared/storage,shared/public/assets/grafiki_animacje}
-sudo mkdir -p /var/www/marcin-projekt/shared/storage/{app/public,framework/cache/data,framework/sessions,framework/testing,framework/views,logs}
-sudo chown -R $USER:www-data /var/www/marcin-projekt
-sudo chmod -R 775 /var/www/marcin-projekt/shared/storage
+Docelowo na koncie FTP powinno wyglądać to tak:
 
-# 2. Plik .env (współdzielony między wydaniami — NIE jest w git)
-nano /var/www/marcin-projekt/shared/.env
-# wklej zawartość podobną do .env.example z repo, uzupełnij dane produkcyjne
-# (APP_ENV=production, APP_DEBUG=false, dane bazy danych, APP_URL=https://twojadomena.pl)
-
-# 3. Klucz aplikacji (jednorazowo, potem zostaje w .env)
-cd /var/www/marcin-projekt/shared
-php artisan key:generate --path=.env  # albo wygeneruj lokalnie i wklej ręcznie do .env
-
-# 4. Prawa do uruchamiania deploy.sh (skrypt trafi na serwer przy pierwszym wdrożeniu,
-#    ale możesz go też wgrać ręcznie z repo już teraz)
+```
+/ (konto FTP)
+├── ideart-app/          <- kod Laravela (NIE jest dostępny z przeglądarki)
+│   ├── app/
+│   ├── vendor/
+│   ├── .env
+│   └── ...
+└── public_html/         <- katalog publiczny domeny ideart.com.pl
+    ├── index.php        <- wskazuje na ../ideart-app/
+    ├── .htaccess
+    ├── build/            (CSS/JS z Vite)
+    └── assets/
+        ├── images/logo.png
+        └── grafiki_animacje/   <- TU wgrywasz zdjęcia/filmy portfolio
+                                   (osobno, nie przez git/CI — patrz niżej)
 ```
 
-Serwer WWW (Nginx/Apache) musi wskazywać na `/var/www/marcin-projekt/current/public`
-— to jest katalog, na który zawsze wskazuje symlink `current`, podmieniany
-przy każdym wdrożeniu.
-
-### Przykład vhosta — Nginx
-
-```nginx
-server {
-    listen 80;
-    server_name twojadomena.pl;
-    root /var/www/marcin-projekt/current/public;
-
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
-```
-
-### Przykład vhosta — Apache
-
-```apache
-<VirtualHost *:80>
-    ServerName twojadomena.pl
-    DocumentRoot /var/www/marcin-projekt/current/public
-
-    <Directory /var/www/marcin-projekt/current/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-```
-
-(Upewnij się, że `mod_rewrite` jest włączone — `sudo a2enmod rewrite`.)
-
-### Klucz SSH dla GitHub Actions
-
-Na serwerze wygeneruj osobną parę kluczy tylko do wdrożeń (bez hasła):
-
-```bash
-ssh-keygen -t ed25519 -f ~/.ssh/github_deploy -N ""
-cat ~/.ssh/github_deploy.pub >> ~/.ssh/authorized_keys
-cat ~/.ssh/github_deploy   # to wklejasz jako sekret DEPLOY_SSH_KEY w GitHub
-```
+**Zanim uruchomisz pierwsze wdrożenie, sprawdź w kliencie FTP
+(np. FileZilla, host `www.mkwk086.cba.pl`) rzeczywistą strukturę
+folderów na koncie** — nazwa `ideart-app` i ścieżka `/public_html/` w
+workflow to założenie, które możesz swobodnie zmienić (patrz sekcja
+"Zmienne repozytorium" niżej), jeśli Twoje konto ma inny układ.
 
 ## Sekrety w repozytorium GitHub
 
-Ustawienia repo → **Settings → Secrets and variables → Actions → New repository secret**:
+Ustawienia repo → **Settings → Secrets and variables → Actions → Secrets → New repository secret**:
 
 | Nazwa sekretu | Wartość |
 |---|---|
-| `DEPLOY_HOST` | adres IP lub domena serwera |
-| `DEPLOY_USER` | użytkownik SSH (np. `deploy` albo `ubuntu`) |
-| `DEPLOY_SSH_KEY` | prywatny klucz SSH (zawartość `~/.ssh/github_deploy` z serwera) |
-| `DEPLOY_PORT` | port SSH (domyślnie 22 — sekret opcjonalny) |
-| `DEPLOY_PATH` | `/var/www/marcin-projekt` (ścieżka z kroku 1 wyżej) |
+| `FTP_SERVER` | `www.mkwk086.cba.pl` |
+| `FTP_USERNAME` | Twoja nazwa użytkownika FTP (z panelu cba.pl) |
+| `FTP_PASSWORD` | Twoje hasło FTP |
+| `APP_KEY` | `base64:75EaBiUFxqMqxvD1Jg4Y8nK9Ye8wFrNwVtM9TAhiRN0=` |
+
+(`APP_KEY` wygenerowany raz, lokalnie — nie zmieniaj go później, inaczej
+stracisz dostęp do ewentualnych zaszyfrowanych danych/sesji.)
+
+## Zmienne repozytorium (jawne, nie sekrety)
+
+Tam samo, ale zakładka **Variables → New repository variable**:
+
+| Nazwa zmiennej | Wartość |
+|---|---|
+| `APP_URL` | `https://ideart.com.pl` |
+| `APP_NAME` | `IDEART` |
+| `FTP_APP_DIR` | `/ideart-app/` (zmień, jeśli Twoja struktura FTP jest inna) |
+| `FTP_PUBLIC_DIR` | `/public_html/` (zmień, jeśli katalog publiczny domeny nazywa się inaczej) |
 
 ## Pierwsze wdrożenie
 
-```bash
-git remote add origin <URL-twojego-repo>
-git push -u origin main
-```
-
-Od tego momentu każdy `git push` na `main` uruchamia wdrożenie automatycznie
-(podgląd postępu: zakładka **Actions** w repozytorium na GitHub).
+Nic więcej nie musisz robić ręcznie na serwerze — pierwszy `git push`
+utworzy oba foldery i wgra wszystko automatycznie. Podgląd postępu:
+zakładka **Actions** w repozytorium na GitHub.
 
 ## Aktualizacja treści portfolio (zdjęcia/filmy)
 
-To osobny proces od wdrożenia kodu — wgrywasz pliki bezpośrednio przez
-SFTP/rsync do:
+To celowo **osobny proces** od wdrażania kodu — folder
+`public/assets/grafiki_animacje/` jest wykluczony z automatycznego
+wdrożenia (500+ MB, dużo ponad to, co sensownie przechodzi przez CI).
+Wgrywaj/aktualizuj go bezpośrednio przez FTP do:
 
 ```
-/var/www/marcin-projekt/shared/public/assets/grafiki_animacje/
+/public_html/assets/grafiki_animacje/
 ```
 
-(ten katalog jest symlinkowany do każdego nowego wydania, więc nie znika
-przy kolejnych wdrożeniach kodu).
+dokładnie tak jak dotychczas — reszta strony (galerie, slider) czyta
+ten folder dynamicznie, więc nowe pliki pojawią się automatycznie.
+
+## O co jeszcze warto zapytać / sprawdzić na cba.pl
+
+- Czy `mod_rewrite` (potrzebny do ładnych adresów URL Laravela) jest
+  włączony domyślnie — zwykle tak na hostingu Apache, ale jeśli po
+  wdrożeniu strona pokazuje błędy 404 na wszystkim poza stroną główną,
+  to jest pierwszy podejrzany.
+- Czy domena `ideart.com.pl` jest już wpięta w konto cba.pl (DNS/serwery
+  nazw) — to osobna sprawa od samego wdrożenia kodu.
