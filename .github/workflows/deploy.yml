@@ -78,7 +78,7 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mirror -R --verbose ./deploy_app/ /ideart-app/; bye"
+          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mkdir -p /ideart-app; mirror -R --verbose ./deploy_app/ /ideart-app/; bye"
 
       - name: Wgraj katalog publiczny domeny
         env:
@@ -86,4 +86,4 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mirror -R --verbose --exclude-glob assets/grafiki_animacje/ ./deploy_public/ /public_html/; bye"
+          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mkdir -p /public_html; mirror -R --verbose --exclude-glob assets/grafiki_animacje/ ./deploy_public/ /public_html/; bye"
