@@ -49,6 +49,7 @@ jobs:
             echo "CACHE_STORE=file"
             echo "QUEUE_CONNECTION=sync"
             echo "FILESYSTEM_DISK=local"
+            echo "DEPLOY_SPLIT_PUBLIC=true"
           } > .env
 
       - name: Zbuduj strukturę pod hosting bez SSH
