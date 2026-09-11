@@ -70,6 +70,18 @@ jobs:
           sed -i "s#__DIR__.'/../bootstrap/app.php'#__DIR__.'/../${APP_DIR_NAME}/bootstrap/app.php'#" deploy_public/index.php
           cat deploy_public/index.php
 
+      - name: DEBUG — czy sekrety FTP w ogóle dotarły (bez ujawniania wartości)
+        env:
+          S: ${{ secrets.FTP_SERVER }}
+          U: ${{ secrets.FTP_USERNAME }}
+          P: ${{ secrets.FTP_PASSWORD }}
+          K: ${{ secrets.APP_KEY }}
+        run: |
+          echo "FTP_SERVER:   ${#S} znaków"
+          echo "FTP_USERNAME: ${#U} znaków"
+          echo "FTP_PASSWORD: ${#P} znaków"
+          echo "APP_KEY:      ${#K} znaków"
+
       - name: Wgraj kod aplikacji (poza katalogiem publicznym domeny)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
