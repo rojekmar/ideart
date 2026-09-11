@@ -4,94 +4,84 @@ Po każdym `git push` na branch `main` GitHub Actions samodzielnie zbuduje
 aplikację (composer + npm) i wgra ją na hosting **przez FTP** — bez
 potrzeby logowania się na serwer.
 
-## Dlaczego taka dziwna struktura?
+Strona działa pod: **https://ideart.com.pl/**
 
-Na zwykłym hostingu nie da się odpalić `php artisan` ani `composer` —
-nie ma terminala. Więc:
+## Struktura na serwerze
 
-- **cały kod aplikacji budujemy w GitHub Actions** (tam JEST PHP,
-  composer i node) i wgrywamy gotowe pliki (razem z folderem `vendor/`)
-- **kod Laravela (poza `public/`) NIE może leżeć w katalogu publicznym
-  domeny** — inaczej każdy mógłby wejść np. na `ideart.com.pl/.env` i
-  zobaczyć Twoje hasła. Dlatego trafia do osobnego folderu **obok**
-  katalogu publicznego, a `index.php` w katalogu publicznym tylko się
-  do niego odwołuje.
-
-Docelowo na koncie FTP powinno wyglądać to tak:
+cba.pl nazywa katalog domeny jej nazwą — **`/ideart.com.pl/`**, nie
+`public_html`. Konto FTP nie pozwala tworzyć nowych folderów NA NAJWYŻSZYM
+POZIOMIE (poza tym jednym, istniejącym), więc kod aplikacji trafia do
+podfolderu wewnątrz niego:
 
 ```
-/ (konto FTP)
-├── ideart-app/          <- kod Laravela (NIE jest dostępny z przeglądarki)
-│   ├── app/
-│   ├── vendor/
-│   ├── .env
-│   └── ...
-└── public_html/         <- katalog publiczny domeny ideart.com.pl
-    ├── index.php        <- wskazuje na ../ideart-app/
-    ├── .htaccess
-    ├── build/            (CSS/JS z Vite)
-    └── assets/
-        ├── images/logo.png
-        └── grafiki_animacje/   <- TU wgrywasz zdjęcia/filmy portfolio
-                                   (osobno, nie przez git/CI — patrz niżej)
+/ideart.com.pl/                  <- katalog publiczny domeny (webroot)
+├── index.php                    <- wskazuje na ./ideart-app/
+├── .htaccess
+├── build/                        (CSS/JS z Vite)
+├── assets/
+│   ├── images/logo.png
+│   └── grafiki_animacje/         <- treść portfolio, wgrywana OSOBNO (patrz niżej)
+└── ideart-app/                  <- kod Laravela, zablokowany .htaccess (Deny all)
+    ├── app/, config/, routes/, resources/, database/, storage/
+    ├── vendor/
+    ├── .env                      (generowany automatycznie przy wdrożeniu)
+    └── bootstrap/app.php
 ```
 
-**Zanim uruchomisz pierwsze wdrożenie, sprawdź w kliencie FTP
-(np. FileZilla, host `www.mkwk086.cba.pl`) rzeczywistą strukturę
-folderów na koncie** — nazwa `ideart-app` i ścieżka `/public_html/` w
-workflow to założenie, które możesz swobodnie zmienić (patrz sekcja
-"Zmienne repozytorium" niżej), jeśli Twoje konto ma inny układ.
+`bootstrap/app.php` wykrywa ten układ automatycznie (po strukturze
+plików, nie przez zmienną środowiskową — `.env` ładuje się PO tym pliku)
+i przestawia `public_path()` na katalog nadrzędny. Lokalny XAMPP działa
+bez zmian, bo ma normalny `public/` obok `bootstrap/`.
+
+## Szybkość wdrożenia
+
+`vendor/` (tysiące plików) jest wgrywane **tylko wtedy, gdy zmienia się
+`composer.lock`** — zwykłe zmiany w kodzie wdrażają się w ~1–2 minuty.
+Wdrożenie z nową/zmienioną zależnością (zmiana `composer.lock`) zajmuje
+20–35 minut, bo cba.pl mocno ogranicza przepustowość FTP przy dużej
+liczbie plików — to nieuniknione przy tym hostingu, ale zdarza się rzadko.
 
 ## Sekrety w repozytorium GitHub
 
-Ustawienia repo → **Settings → Secrets and variables → Actions → Secrets → New repository secret**:
+Ustawienia repo → **Settings → Secrets and variables → Actions → Secrets**:
 
 | Nazwa sekretu | Wartość |
 |---|---|
 | `FTP_SERVER` | `www.mkwk086.cba.pl` |
-| `FTP_USERNAME` | Twoja nazwa użytkownika FTP (z panelu cba.pl) |
-| `FTP_PASSWORD` | Twoje hasło FTP |
+| `FTP_USERNAME` | login FTP z panelu cba.pl |
+| `FTP_PASSWORD` | hasło do tego konta FTP |
 | `APP_KEY` | `base64:75EaBiUFxqMqxvD1Jg4Y8nK9Ye8wFrNwVtM9TAhiRN0=` |
 
-(`APP_KEY` wygenerowany raz, lokalnie — nie zmieniaj go później, inaczej
-stracisz dostęp do ewentualnych zaszyfrowanych danych/sesji.)
+**Uwaga przy dodawaniu sekretów:** jeśli po zapisaniu sekret pokazuje się
+na liście, ale w logu GitHub Actions wychodzi jako pusty — sprawdź, czy
+w przeglądarce nie jest aktywny AdBlock/podobne rozszerzenie na
+github.com. U nas to właśnie blokowało zapis wartości (nazwa się
+zapisywała, wartość nie), mimo że formularz nie zgłaszał żadnego błędu.
 
-## Zmienne repozytorium (jawne, nie sekrety)
-
-Tam samo, ale zakładka **Variables → New repository variable**:
-
-| Nazwa zmiennej | Wartość |
-|---|---|
-| `APP_URL` | `https://ideart.com.pl` |
-| `APP_NAME` | `IDEART` |
-| `FTP_APP_DIR` | `/ideart-app/` (zmień, jeśli Twoja struktura FTP jest inna) |
-| `FTP_PUBLIC_DIR` | `/public_html/` (zmień, jeśli katalog publiczny domeny nazywa się inaczej) |
-
-## Pierwsze wdrożenie
-
-Nic więcej nie musisz robić ręcznie na serwerze — pierwszy `git push`
-utworzy oba foldery i wgra wszystko automatycznie. Podgląd postępu:
-zakładka **Actions** w repozytorium na GitHub.
+`APP_URL` i `APP_NAME` są na stałe wpisane w workflow (nie jako
+zmienne repo) — prościej, bo token użyty do konfiguracji nie miał
+uprawnień do zakładki "Variables". Można to zmienić w
+`.github/workflows/deploy.yml`, jeśli zajdzie taka potrzeba.
 
 ## Aktualizacja treści portfolio (zdjęcia/filmy)
 
-To celowo **osobny proces** od wdrażania kodu — folder
-`public/assets/grafiki_animacje/` jest wykluczony z automatycznego
-wdrożenia (500+ MB, dużo ponad to, co sensownie przechodzi przez CI).
-Wgrywaj/aktualizuj go bezpośrednio przez FTP do:
+Osobny proces od wdrażania kodu — folder `grafiki_animacje/` jest
+wykluczony z automatycznego wdrożenia (500+ MB). Wgrywaj bezpośrednio
+przez FTP do:
 
 ```
-/public_html/assets/grafiki_animacje/
+/ideart.com.pl/assets/grafiki_animacje/
 ```
 
-dokładnie tak jak dotychczas — reszta strony (galerie, slider) czyta
-ten folder dynamicznie, więc nowe pliki pojawią się automatycznie.
+## Historia i rzeczy warte zapamiętania
 
-## O co jeszcze warto zapytać / sprawdzić na cba.pl
-
-- Czy `mod_rewrite` (potrzebny do ładnych adresów URL Laravela) jest
-  włączony domyślnie — zwykle tak na hostingu Apache, ale jeśli po
-  wdrożeniu strona pokazuje błędy 404 na wszystkim poza stroną główną,
-  to jest pierwszy podejrzany.
-- Czy domena `ideart.com.pl` jest już wpięta w konto cba.pl (DNS/serwery
-  nazw) — to osobna sprawa od samego wdrożenia kodu.
+- **Konto FTP nie pozwala tworzyć folderów poza istniejącym katalogiem
+  domeny** — stąd struktura z `ideart-app/` w środku, nie obok.
+- Przy pierwszym wdrożeniu na serwerze pojawiła się (z niewyjaśnionej
+  przyczyny — nie z tego workflow) osierocona, w pełni odsłonięta kopia
+  repozytorium bezpośrednio w `/ideart.com.pl/` — **w tym publicznie
+  dostępny `.git`**. Zostało to wykryte i usunięte. Jeśli kiedyś
+  zobaczysz w katalogu domeny pliki inne niż wymienione w strukturze
+  wyżej, zbadaj to i usuń.
+- PHP na cba.pl trzeba było ręcznie przestawić w panelu z domyślnego
+  5.6 na 8.2+ (projekt wymaga PHP ^8.2) — obecnie ustawione na 8.5.
