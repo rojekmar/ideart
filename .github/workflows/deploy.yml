@@ -70,13 +70,17 @@ jobs:
           sed -i "s#__DIR__.'/../bootstrap/app.php'#__DIR__.'/../${APP_DIR_NAME}/bootstrap/app.php'#" deploy_public/index.php
           cat deploy_public/index.php
 
-      - name: DEBUG — czy sekrety FTP w ogóle dotarły (bez ujawniania wartości)
+      - name: DEBUG — czy sekrety/zmienne w ogóle dotarły
         env:
           S: ${{ secrets.FTP_SERVER }}
           U: ${{ secrets.FTP_USERNAME }}
           P: ${{ secrets.FTP_PASSWORD }}
           K: ${{ secrets.APP_KEY }}
+          V: ${{ vars.APP_URL }}
         run: |
+          echo "repository: ${{ github.repository }}"
+          echo "actor: ${{ github.actor }}"
+          echo "APP_URL (var, jawnie, to NIE sekret): '$V'"
           echo "FTP_SERVER:   ${#S} znaków"
           echo "FTP_USERNAME: ${#U} znaków"
           echo "FTP_PASSWORD: ${#P} znaków"
