@@ -51,34 +51,46 @@ jobs:
             echo "FILESYSTEM_DISK=local"
           } > .env
 
-      - name: Zbuduj strukturę pod hosting bez SSH (kod poza public_html, reszta w nim)
+      - name: Zbuduj strukturę pod hosting bez SSH
         run: |
           mkdir -p deploy_app deploy_public
           shopt -s extglob dotglob
-          # wszystko poza folderem public/ trafia do deploy_app (kod aplikacji,
-          # trzymany POZA katalogiem publicznym domeny)
+          # Konto FTP na cba.pl nie pozwala tworzyć nowych folderów na
+          # najwyższym poziomie (poza istniejącym public_html) — więc kod
+          # aplikacji trafia DO ŚRODKA public_html, w podfolderze ideart-app/,
+          # zablokowanym dla przeglądarki przez .htaccess (patrz niżej).
           cp -r !(public|deploy_app|deploy_public|node_modules|tests|.git|.github) deploy_app/
-          # zawartość public/ trafia do deploy_public (katalog publiczny domeny)
           cp -r public/!(hot) deploy_public/ 2>/dev/null || cp -r public/* deploy_public/
 
-          # index.php w katalogu publicznym musi wskazywać na kod aplikacji
-          # leżący jeden poziom wyżej, w folderze ideart-app/ (patrz DEPLOY.md —
-          # dopasuj APP_DIR_NAME, jeśli Twoja struktura na FTP jest inna)
+          # .htaccess blokujący bezpośredni dostęp przeglądarki do kodu aplikacji
+          {
+            echo "<IfModule mod_authz_core.c>"
+            echo "    Require all denied"
+            echo "</IfModule>"
+            echo "<IfModule !mod_authz_core.c>"
+            echo "    Order deny,allow"
+            echo "    Deny from all"
+            echo "</IfModule>"
+          } > deploy_app/.htaccess
+
+          # index.php w katalogu publicznym wskazuje na kod aplikacji w
+          # PODFOLDERZE ideart-app/ (ta sama głębokość, nie o poziom wyżej —
+          # patrz DEPLOY.md, jeśli Twoja struktura na FTP jest inna)
           APP_DIR_NAME="ideart-app"
-          sed -i "s#__DIR__.'/../storage/framework/maintenance.php'#__DIR__.'/../${APP_DIR_NAME}/storage/framework/maintenance.php'#" deploy_public/index.php
-          sed -i "s#__DIR__.'/../vendor/autoload.php'#__DIR__.'/../${APP_DIR_NAME}/vendor/autoload.php'#" deploy_public/index.php
-          sed -i "s#__DIR__.'/../bootstrap/app.php'#__DIR__.'/../${APP_DIR_NAME}/bootstrap/app.php'#" deploy_public/index.php
+          sed -i "s#__DIR__.'/../storage/framework/maintenance.php'#__DIR__.'/${APP_DIR_NAME}/storage/framework/maintenance.php'#" deploy_public/index.php
+          sed -i "s#__DIR__.'/../vendor/autoload.php'#__DIR__.'/${APP_DIR_NAME}/vendor/autoload.php'#" deploy_public/index.php
+          sed -i "s#__DIR__.'/../bootstrap/app.php'#__DIR__.'/${APP_DIR_NAME}/bootstrap/app.php'#" deploy_public/index.php
 
       - name: Zainstaluj lftp (pewniejsze tworzenie katalogów niż akcje JS)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: Wgraj kod aplikacji (poza katalogiem publicznym domeny)
+      - name: Wgraj kod aplikacji (do public_html/ideart-app/, zablokowany .htaccess)
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mkdir -p /ideart-app; mirror -R --verbose ./deploy_app/ /ideart-app/; bye"
+          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mkdir -p /public_html/ideart-app; mirror -R --verbose ./deploy_app/ /public_html/ideart-app/; bye"
 
       - name: Wgraj katalog publiczny domeny
         env:
@@ -86,4 +98,4 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mkdir -p /public_html; mirror -R --verbose --exclude-glob assets/grafiki_animacje/ ./deploy_public/ /public_html/; bye"
+          lftp -e "set ftp:ssl-allow no; set mirror:parallel-transfer-count 3; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\"; mirror -R --verbose --exclude-glob ideart-app/ --exclude-glob assets/grafiki_animacje/ ./deploy_public/ /public_html/; bye"
