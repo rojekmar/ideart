@@ -17,7 +17,11 @@
         {{-- ---------- HERO ---------- --}}
         <section class="hero">
             @php
+                // Kolejność losowa (inna przy każdym wczytaniu strony) —
+                // dotyczy wyłącznie tego suwaka, reszta galerii nadal sortuje
+                // po dacie dodania (patrz get_images_from_dir()).
                 $heroSlides = get_images_from_dir('assets/grafiki_animacje/slider');
+                shuffle($heroSlides);
                 $heroSlideSeconds = 4; // tempo zmiany obrazów w suwaku
                 $heroSlideCount = count($heroSlides);
                 $heroCycleSeconds = $heroSlideCount * $heroSlideSeconds;
