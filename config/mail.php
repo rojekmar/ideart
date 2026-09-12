@@ -115,4 +115,12 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Adres odbiorcy formularza kontaktowego
+    |--------------------------------------------------------------------------
+    */
+
+    'contact_recipient' => env('MAIL_CONTACT_TO', 'rojekmar@gmail.com'),
+
 ];

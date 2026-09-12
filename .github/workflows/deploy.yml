@@ -57,6 +57,15 @@ jobs:
             echo "CACHE_STORE=file"
             echo "QUEUE_CONNECTION=sync"
             echo "FILESYSTEM_DISK=local"
+            echo "MAIL_MAILER=smtp"
+            echo "MAIL_HOST=smtp.gmail.com"
+            echo "MAIL_PORT=587"
+            echo "MAIL_USERNAME=rojekmar@gmail.com"
+            echo "MAIL_PASSWORD=\"${{ secrets.MAIL_PASSWORD }}\""
+            echo "MAIL_ENCRYPTION=tls"
+            echo "MAIL_FROM_ADDRESS=rojekmar@gmail.com"
+            echo "MAIL_FROM_NAME=\"IDEART\""
+            echo "MAIL_CONTACT_TO=rojekmar@gmail.com"
           } > .env
 
       - name: Zbuduj strukturę pod hosting bez SSH

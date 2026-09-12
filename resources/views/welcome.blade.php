@@ -266,26 +266,45 @@
                     </ul>
                 </div>
 
-                <form class="contact-form" method="POST" action="#" novalidate>
+                <form class="contact-form" method="POST" action="{{ route('contact.store') }}">
+                    @csrf
+
+                    @if(session('contact_status') === 'success')
+                        <p class="form-alert form-alert--success">Dziękuję! Wiadomość została wysłana — odezwę się wkrótce.</p>
+                    @endif
+
+                    @if($errors->any())
+                        <p class="form-alert form-alert--error">
+                            Popraw poniższe pola:
+                            <ul>
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </p>
+                    @endif
+
+                    {{-- Pole-pułapka na boty — ukryte dla ludzi przez CSS --}}
+                    <input type="text" name="website" tabindex="-1" autocomplete="off" class="form-honeypot">
+
                     <label>Imię
-                        <input type="text" name="name" autocomplete="name" required>
+                        <input type="text" name="name" value="{{ old('name') }}" autocomplete="name" required>
                     </label>
                     <label>E-mail
-                        <input type="email" name="email" autocomplete="email" required>
+                        <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required>
                     </label>
                     <label>Telefon
-                        <input type="tel" name="phone" autocomplete="tel">
+                        <input type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel">
                     </label>
                     <label>Rodzaj projektu
                         <select name="type">
-                            <option>Grafika 3D</option>
-                            <option>Grafika 2D</option>
-                            <option>Animacja i Film</option>
-                            <option>Fotografia</option>
+                            @foreach(['Grafika 3D', 'Grafika 2D', 'Animacja i Film', 'Fotografia'] as $option)
+                                <option @selected(old('type') === $option)>{{ $option }}</option>
+                            @endforeach
                         </select>
                     </label>
                     <label>Wiadomość
-                        <textarea name="message" rows="4" required></textarea>
+                        <textarea name="message" rows="4" required>{{ old('message') }}</textarea>
                     </label>
                     <button type="submit" class="btn">Wyślij zapytanie</button>
                     <p class="form-note">Wysyłając formularz, zgadzasz się na kontakt w sprawie zapytania.</p>

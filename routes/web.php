@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::post('/kontakt', [ContactController::class, 'store'])
+    ->name('contact.store')
+    ->middleware('throttle:5,1'); // maks. 5 prób na minutę — ochrona przed spamem
 
 Route::get('/portfolio/{slug}', function (string $slug) {
     $categories = portfolio_categories();
