@@ -51,6 +51,7 @@ Ustawienia repo → **Settings → Secrets and variables → Actions → Secrets
 | `FTP_USERNAME` | login FTP z panelu cba.pl |
 | `FTP_PASSWORD` | hasło do tego konta FTP |
 | `APP_KEY` | `base64:75EaBiUFxqMqxvD1Jg4Y8nK9Ye8wFrNwVtM9TAhiRN0=` |
+| `MAIL_PASSWORD` | hasło aplikacji Gmail dla `rojekmar@gmail.com` (używane przez formularz kontaktowy do wysyłki e-mail przez SMTP) |
 
 **Uwaga przy dodawaniu sekretów:** jeśli po zapisaniu sekret pokazuje się
 na liście, ale w logu GitHub Actions wychodzi jako pusty — sprawdź, czy
@@ -85,3 +86,12 @@ przez FTP do:
   wyżej, zbadaj to i usuń.
 - PHP na cba.pl trzeba było ręcznie przestawić w panelu z domyślnego
   5.6 na 8.2+ (projekt wymaga PHP ^8.2) — obecnie ustawione na 8.5.
+- **`MAIL_PASSWORD` też padło ofiarą tego samego problemu z AdBlockiem**
+  (sekret zapisał się pusty, formularz kontaktowy wywalał się na
+  produkcji błędem `535 Username and Password not accepted` mimo że
+  lokalnie działał). Jeśli formularz kontaktowy przestanie wysyłać
+  maile po zmianie tego sekretu, sprawdź go tą samą metodą.
+- Formularz kontaktowy (`/kontakt`) wysyła e-mail przez Gmail SMTP na
+  adres z `MAIL_CONTACT_TO` (domyślnie `rojekmar@gmail.com`). Loginem
+  jest `rojekmar@gmail.com`, a hasłem — **hasło aplikacji Gmail**
+  (App Password), nie zwykłe hasło do konta.
