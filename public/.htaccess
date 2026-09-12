@@ -5,6 +5,17 @@
 
     RewriteEngine On
 
+    # Wymuszenie HTTPS — %{HTTPS} poprawnie odzwierciedla prawdziwy protokół
+    # klienta (zweryfikowane bezpośrednio na produkcji: proxy przed serwerem
+    # przekazuje X-Forwarded-Proto, a PHP/Apache ustawiają $_SERVER['HTTPS']
+    # zgodnie z nim), więc to bezpieczne — nie ma ryzyka pętli przekierowań
+    # dla odwiedzających już na https. Wykluczone localhost/127.0.0.1 — lokalny
+    # XAMPP nie ma skonfigurowanego HTTPS, więc reguła nie działa lokalnie.
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} !=localhost
+    RewriteCond %{HTTP_HOST} !=127.0.0.1
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
