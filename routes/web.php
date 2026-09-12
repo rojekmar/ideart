@@ -50,7 +50,20 @@ Route::get('/sitemap.xml', function () {
         ])
     );
 
-    return response()
-        ->view('sitemap', ['urls' => $urls])
-        ->header('Content-Type', 'text/xml');
+    // Budowane jako czysty string PHP (bez widoku Blade) celowo — nagłówek
+    // XML w pliku .blade.php myli kompilator Blade'a na serwerach z
+    // włączonym short_open_tag (dokładnie tak było na cba.pl: kompilator
+    // zostawiał dyrektywę {!! !!} nierozwiniętą, co dawało syntax error przy
+    // renderowaniu). Uwaga na przyszłość: literalna sekwencja zamykająca
+    // znacznik PHP nie może się pojawić nawet w komentarzu // w zwykłym
+    // pliku .php — kończy blok PHP w tym miejscu (dokladnie to samo zdarzylo
+    // sie przy pierwszej probie napisania tego komentarza).
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    foreach ($urls as $url) {
+        $xml .= '<url><loc>' . e($url['loc']) . '</loc><priority>' . e($url['priority']) . '</priority></url>' . "\n";
+    }
+    $xml .= '</urlset>';
+
+    return response($xml, 200)->header('Content-Type', 'text/xml; charset=UTF-8');
 })->name('sitemap');
