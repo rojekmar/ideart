@@ -584,6 +584,7 @@ button.gallery-item:focus-visible {
    materiałami (strzałki/swipe) to osobna animacja — patrz .lightbox-slide
    niżej — żeby powiększenie przy otwarciu nie kolidowało z przesuwaniem. */
 .lightbox-stage {
+    --lightbox-gap: 5px;
     position: absolute;
     inset: clamp(1rem, 5vw, 3rem);
     overflow: hidden;
@@ -598,7 +599,11 @@ button.gallery-item:focus-visible {
 
 /* Pojedynczy "slajd" wewnątrz sceny — podczas nawigacji obecny slajd
    wyjeżdża w bok, a kolejny wjeżdża z przeciwnej strony (efekt
-   przeciągania, zgodny z kierunkiem gestu swipe). */
+   przeciągania, zgodny z kierunkiem gestu swipe). Odstęp (--lightbox-gap)
+   doliczony do dystansu wjazdu/wyjazdu — obie strony przesuwają się o
+   dokładnie tyle samo w przeciwne strony, więc ten odstęp utrzymuje się
+   przez całą animację (znika dopiero, gdy zwycięski slajd osiądzie na 0,
+   a poprzedni zostanie usunięty z DOM). */
 .lightbox-slide {
     position: absolute;
     inset: 0;
@@ -608,10 +613,10 @@ button.gallery-item:focus-visible {
     transform: translateX(0);
     transition: transform 0.42s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.lightbox-slide--enter-from-right { transform: translateX(100%); }
-.lightbox-slide--enter-from-left { transform: translateX(-100%); }
-.lightbox-slide--exit-to-left { transform: translateX(-100%); }
-.lightbox-slide--exit-to-right { transform: translateX(100%); }
+.lightbox-slide--enter-from-right { transform: translateX(calc(100% + var(--lightbox-gap))); }
+.lightbox-slide--enter-from-left { transform: translateX(calc(-100% - var(--lightbox-gap))); }
+.lightbox-slide--exit-to-left { transform: translateX(calc(-100% - var(--lightbox-gap))); }
+.lightbox-slide--exit-to-right { transform: translateX(calc(100% + var(--lightbox-gap))); }
 
 .lightbox-media {
     max-width: 100%;
