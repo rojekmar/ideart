@@ -584,7 +584,7 @@ button.gallery-item:focus-visible {
    materiałami (strzałki/swipe) to osobna animacja — patrz .lightbox-slide
    niżej — żeby powiększenie przy otwarciu nie kolidowało z przesuwaniem. */
 .lightbox-stage {
-    --lightbox-gap: 5px;
+    --lightbox-gap: 15px;
     position: absolute;
     inset: clamp(1rem, 5vw, 3rem);
     overflow: hidden;
