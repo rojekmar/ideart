@@ -94,15 +94,15 @@
                         <h3>Animacja i Film</h3>
                         <p>Animacje 3D i 2D, motion design oraz realizacja filmowa — od scenariusza i planu zdjęciowego po spoty, intra i loopy.</p>
                     </a>
-                    <a class="card" href="#portfolio-fotografia">
-                        <span class="card-num">04</span>
-                        <h3>Fotografia</h3>
-                        <p>Sesje produktowe, wnętrzarskie i wizerunkowe wraz z retuszem i obróbką w wysokiej jakości.</p>
-                    </a>
                     <a class="card" href="#portfolio-360-interaktywnie">
-                        <span class="card-num">05</span>
+                        <span class="card-num">04</span>
                         <h3>360 Interaktywnie</h3>
                         <p>Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.</p>
+                    </a>
+                    <a class="card" href="#portfolio-fotografia">
+                        <span class="card-num">05</span>
+                        <h3>Fotografia</h3>
+                        <p>Sesje produktowe, wnętrzarskie i wizerunkowe wraz z retuszem i obróbką w wysokiej jakości.</p>
                     </a>
                 </div>
             </div>
