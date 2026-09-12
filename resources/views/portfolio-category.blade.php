@@ -7,6 +7,19 @@
     $heroBgItem = collect($media)->first(fn ($item) => in_array($item['type'], ['image', '360']));
     $heroBgSrc = $heroBgItem ? ($heroBgItem['type'] === '360' ? $heroBgItem['thumb'] : $heroBgItem['src']) : null;
     $heroBgVideo = $heroBgSrc ? null : collect($media)->first(fn ($item) => $item['type'] === 'video');
+
+    // Dane strukturalne (Schema.org) — "okruszkowa" ścieżka, żeby Google mógł
+    // pokazać w wynikach czytelną hierarchię (Strona główna > Portfolio >
+    // {kategoria}) zamiast gołego adresu URL.
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Strona główna', 'item' => url('/')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Portfolio', 'item' => url('/').'#portfolio'],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $category['title'], 'item' => route('portfolio.category', $category['slug'])],
+        ],
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -23,6 +36,7 @@
     <meta property="og:description" content="{{ $category['description'] }}">
     <meta property="og:image" content="{{ $heroBgSrc ?? asset('assets/images/logo.png') }}">
     <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

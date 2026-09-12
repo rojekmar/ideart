@@ -13,6 +13,27 @@
     <meta property="og:description" content="Grafika 3D i 2D, animacja, film, montaż, postprodukcja i fotografia. Tworzę obrazy, które przyciągają uwagę.">
     <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
     <meta name="twitter:card" content="summary_large_image">
+    @php
+        // Dane strukturalne (Schema.org) — nie widać ich na stronie, ale
+        // pomagają Google zrozumieć, kim jesteśmy (może to poskutkować np.
+        // bogatszymi wynikami wyszukiwania z danymi kontaktowymi).
+        $businessSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ProfessionalService',
+            'name' => config('app.name', 'IDEART'),
+            'description' => 'Grafika 3D i 2D, animacja, film, montaż, postprodukcja i fotografia.',
+            'url' => url('/'),
+            'image' => asset('assets/images/logo.png'),
+            'email' => 'rojekmar@gmail.com',
+            'telephone' => '+48506992772',
+            'areaServed' => 'PL',
+            'founder' => [
+                '@type' => 'Person',
+                'name' => 'Marcin Rojek',
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($businessSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
