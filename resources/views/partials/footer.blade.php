@@ -1,21 +1,21 @@
 @php
-    $isHome = request()->routeIs('home');
-    $navHref = fn (string $anchor) => $isHome ? "#{$anchor}" : route('home') . "#{$anchor}";
+    $isHome = request()->routeIs('home') || request()->routeIs('en.home');
+    $navHref = fn (string $anchor) => $isHome ? "#{$anchor}" : localized_route('home')."#{$anchor}";
 @endphp
 <footer class="site-footer">
     <div class="container footer-inner">
-        <a href="{{ route('home') }}" class="logo">
+        <a href="{{ localized_route('home') }}" class="logo">
             <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
         </a>
         <p class="footer-text">
-            Grafika 3D i 2D, animacja, film i fotografia.
+            {{ __('site.footer.tagline') }}
         </p>
         <nav class="footer-nav">
-            <a href="{{ $navHref('oferta') }}">Oferta</a>
-            <a href="{{ $navHref('portfolio') }}">Portfolio</a>
-            <a href="{{ $navHref('faq') }}">FAQ</a>
-            <a href="{{ $navHref('kontakt') }}">Kontakt</a>
+            <a href="{{ $navHref('oferta') }}">{{ __('site.nav.oferta') }}</a>
+            <a href="{{ $navHref('portfolio') }}">{{ __('site.nav.portfolio') }}</a>
+            <a href="{{ $navHref('faq') }}">{{ __('site.nav.faq') }}</a>
+            <a href="{{ $navHref('kontakt') }}">{{ __('site.nav.kontakt') }}</a>
         </nav>
     </div>
-    <p class="footer-copy">&copy; {{ date('Y') }} — wszystkie prawa zastrzeżone.</p>
+    <p class="footer-copy">&copy; {{ date('Y') }} — {{ __('site.footer.copy') }}</p>
 </footer>

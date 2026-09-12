@@ -135,6 +135,29 @@ a { color: inherit; text-decoration: none; }
 .site-nav a.btn { color: #14100a; }
 .site-nav a.btn:hover { color: #14100a; }
 
+/* Przełącznik języka (PL/EN) — mała "pigułka" obok reszty menu. Selektor
+   ".site-nav a.lang-switch" (nie samo ".lang-switch") celowo — musi być
+   bardziej specyficzny niż ".site-nav a:hover", inaczej ten drugi wygrywa
+   i nadpisuje kolor przy najechaniu (ten sam mechanizm co przy błędzie z
+   polem-pułapką formularza kontaktowego). */
+.site-nav a.lang-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.1rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+}
+.site-nav a.lang-switch:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
 /* burger (mobile) */
 .nav-toggle,
 .nav-burger { display: none; }
@@ -938,6 +961,12 @@ button.gallery-item:focus-visible {
     .site-nav a.btn {
         margin: 0.8rem clamp(1rem, 4vw, 2rem);
         text-align: center;
+    }
+    .site-nav a.lang-switch {
+        align-self: center;
+        margin: 0.8rem 0;
+        border-top: none;
+        padding: 0.3rem 0.6rem;
     }
 
     /* Podgląd Portfolio na stronie głównej — tylko 1 grafika na kategorię

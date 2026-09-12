@@ -15,9 +15,9 @@
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
-            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Strona główna', 'item' => url('/')],
-            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Portfolio', 'item' => url('/').'#portfolio'],
-            ['@type' => 'ListItem', 'position' => 3, 'name' => $category['title'], 'item' => route('portfolio.category', $category['slug'])],
+            ['@type' => 'ListItem', 'position' => 1, 'name' => __('site.category_page.breadcrumb_home'), 'item' => localized_route('home')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('site.category_page.breadcrumb_portfolio'), 'item' => localized_route('home').'#portfolio'],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $category['title'], 'item' => localized_route('portfolio.category', $category['slug'])],
         ],
     ];
 @endphp
@@ -28,9 +28,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $category['title'] }} — {{ config('app.name', 'Portfolio') }}</title>
     <meta name="description" content="{{ $category['description'] }}">
-    <link rel="canonical" href="{{ route('portfolio.category', $category['slug']) }}">
+    <link rel="canonical" href="{{ localized_route('portfolio.category', $category['slug']) }}">
+    @if($altUrl = alternate_locale_url())
+        <link rel="alternate" hreflang="{{ app()->getLocale() === 'en' ? 'pl' : 'en' }}" href="{{ $altUrl }}">
+        <link rel="alternate" hreflang="{{ app()->getLocale() }}" href="{{ localized_route('portfolio.category', $category['slug']) }}">
+    @endif
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ route('portfolio.category', $category['slug']) }}">
+    <meta property="og:url" content="{{ localized_route('portfolio.category', $category['slug']) }}">
     <meta property="og:site_name" content="{{ config('app.name', 'Portfolio') }}">
     <meta property="og:title" content="{{ $category['title'] }} — {{ config('app.name', 'Portfolio') }}">
     <meta property="og:description" content="{{ $category['description'] }}">
@@ -61,8 +65,8 @@
                 <div class="hero-overlay" aria-hidden="true"></div>
             @endif
             <div class="container">
-                <a href="{{ route('home') }}#portfolio" class="breadcrumb">&larr; Wróć do Portfolio</a>
-                <p class="eyebrow">Portfolio</p>
+                <a href="{{ localized_route('home') }}#portfolio" class="breadcrumb">{!! __('site.category_page.breadcrumb') !!}</a>
+                <p class="eyebrow">{{ __('site.category_page.eyebrow') }}</p>
                 <h1 class="hero-title">{{ $category['title'] }}</h1>
                 <p class="hero-lead">{{ $category['description'] }}</p>
             </div>
@@ -73,7 +77,7 @@
             <div class="container category-switcher-inner">
                 @foreach($categories as $item)
                     <a
-                        href="{{ route('portfolio.category', $item['slug']) }}"
+                        href="{{ localized_route('portfolio.category', $item['slug']) }}"
                         class="category-pill {{ $item['slug'] === $category['slug'] ? 'is-active' : '' }}"
                     >{{ $item['title'] }}</a>
                 @endforeach
@@ -100,7 +104,7 @@
                         @include('partials.media-gallery', ['items' => $media, 'label' => $category['title']])
                     @endif
                 @else
-                    <p class="portfolio-empty">Wkrótce nowe realizacje w tej kategorii.</p>
+                    <p class="portfolio-empty">{{ __('site.category_page.coming_soon') }}</p>
                 @endif
             </div>
         </section>
@@ -108,19 +112,19 @@
         @if(count($media))
             {{-- ---------- LIGHTBOX ---------- --}}
             <div class="lightbox" data-lightbox-overlay hidden>
-                <button type="button" class="lightbox-close" data-lightbox-close aria-label="Zamknij podgląd">&times;</button>
-                <button type="button" class="lightbox-arrow lightbox-arrow--prev" data-lightbox-prev aria-label="Poprzednie zdjęcie">&larr;</button>
+                <button type="button" class="lightbox-close" data-lightbox-close aria-label="{{ __('site.category_page.lightbox_close') }}">&times;</button>
+                <button type="button" class="lightbox-arrow lightbox-arrow--prev" data-lightbox-prev aria-label="{{ __('site.category_page.lightbox_prev') }}">&larr;</button>
                 <div class="lightbox-stage" data-lightbox-stage></div>
-                <button type="button" class="lightbox-arrow lightbox-arrow--next" data-lightbox-next aria-label="Następne zdjęcie">&rarr;</button>
+                <button type="button" class="lightbox-arrow lightbox-arrow--next" data-lightbox-next aria-label="{{ __('site.category_page.lightbox_next') }}">&rarr;</button>
             </div>
         @endif
 
         {{-- ---------- CTA ---------- --}}
         <section class="section section--alt section--center">
             <div class="container">
-                <h2 class="section-title">Podoba Ci się ten styl?</h2>
-                <p class="section-text">Napisz, jaki projekt masz na myśli — odezwę się z wyceną.</p>
-                <a href="{{ route('home') }}#kontakt" class="btn">Napisz wiadomość</a>
+                <h2 class="section-title">{{ __('site.category_page.cta_title') }}</h2>
+                <p class="section-text">{{ __('site.category_page.cta_text') }}</p>
+                <a href="{{ localized_route('home') }}#kontakt" class="btn">{{ __('site.category_page.cta_button') }}</a>
             </div>
         </section>
 

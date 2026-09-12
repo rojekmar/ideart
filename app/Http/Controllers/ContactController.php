@@ -11,6 +11,13 @@ class ContactController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
+        // Ten sam kontroler obsługuje oba formularze (polski /kontakt i
+        // angielski /en/contact) — nazwa trasy mówi, którą wersję
+        // wypełniono, więc możemy ustawić język (komunikaty walidacji) i
+        // wrócić na właściwą stronę główną.
+        $isEnglish = str_starts_with((string) $request->route()?->getName(), 'en.');
+        app()->setLocale($isEnglish ? 'en' : 'pl');
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
@@ -25,8 +32,10 @@ class ContactController extends Controller
         Mail::to(config('mail.contact_recipient'))
             ->send(new ContactFormSubmitted($validated));
 
+        $homeUrl = $isEnglish ? route('en.home') : route('home');
+
         return redirect()
-            ->to(url('/').'#kontakt')
+            ->to($homeUrl.'#kontakt')
             ->with('contact_status', 'success');
     }
 }

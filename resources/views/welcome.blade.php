@@ -3,14 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Portfolio') }} — Grafika 3D, 2D, animacja, film</title>
-    <meta name="description" content="Grafika 3D i 2D, animacja, film, montaż, postprodukcja i fotografia. Tworzę obrazy, które przyciągają uwagę.">
-    <link rel="canonical" href="{{ url('/') }}">
+    <title>{{ config('app.name', 'Portfolio') }} — {{ __('site.meta.title_suffix') }}</title>
+    <meta name="description" content="{{ __('site.meta.description') }}">
+    <link rel="canonical" href="{{ localized_route('home') }}">
+    <link rel="alternate" hreflang="pl" href="{{ route('home') }}">
+    <link rel="alternate" hreflang="en" href="{{ route('en.home') }}">
+    <link rel="alternate" hreflang="x-default" href="{{ route('home') }}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:url" content="{{ localized_route('home') }}">
     <meta property="og:site_name" content="{{ config('app.name', 'Portfolio') }}">
-    <meta property="og:title" content="{{ config('app.name', 'Portfolio') }} — Grafika 3D, 2D, animacja, film">
-    <meta property="og:description" content="Grafika 3D i 2D, animacja, film, montaż, postprodukcja i fotografia. Tworzę obrazy, które przyciągają uwagę.">
+    <meta property="og:title" content="{{ config('app.name', 'Portfolio') }} — {{ __('site.meta.title_suffix') }}">
+    <meta property="og:description" content="{{ __('site.meta.description') }}">
     <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
     <meta name="twitter:card" content="summary_large_image">
     @php
@@ -21,8 +24,8 @@
             '@context' => 'https://schema.org',
             '@type' => 'ProfessionalService',
             'name' => config('app.name', 'IDEART'),
-            'description' => 'Grafika 3D i 2D, animacja, film, montaż, postprodukcja i fotografia.',
-            'url' => url('/'),
+            'description' => __('site.meta.description'),
+            'url' => localized_route('home'),
             'image' => asset('assets/images/logo.png'),
             'email' => 'rojekmar@gmail.com',
             'telephone' => '+48506992772',
@@ -86,15 +89,14 @@
             @endif
 
             <div class="container">
-                <p class="eyebrow">Grafika 3D &middot; 2D &middot; animacja &middot; film</p>
-                <h1 class="hero-title">Tworzę obrazy, które przyciągają wzrok i zostają w pamięci</h1>
+                <p class="eyebrow">{!! __('site.hero.eyebrow') !!}</p>
+                <h1 class="hero-title">{{ __('site.hero.title') }}</h1>
                 <p class="hero-lead">
-                    Od modelu 3D i klatki animacji po zmontowany film i wyretuszowaną fotografię —
-                    kompleksowo prowadzę projekt od pomysłu do gotowego materiału.
+                    {{ __('site.hero.lead') }}
                 </p>
                 <div class="hero-actions">
-                    <a href="#portfolio" class="btn">Zobacz moje realizacje</a>
-                    <a href="#oferta" class="btn btn--ghost">Poznaj zakres usług</a>
+                    <a href="#portfolio" class="btn">{{ __('site.hero.cta_primary') }}</a>
+                    <a href="#oferta" class="btn btn--ghost">{{ __('site.hero.cta_secondary') }}</a>
                 </div>
             </div>
         </section>
@@ -103,39 +105,38 @@
         <section id="oferta" class="section">
             <div class="container">
                 <header class="section-head">
-                    <p class="eyebrow">Oferta</p>
-                    <h2 class="section-title">Co mogę dla Ciebie stworzyć?</h2>
+                    <p class="eyebrow">{{ __('site.oferta.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.oferta.title') }}</h2>
                     <p class="section-text">
-                        Pięć obszarów, które łączę w spójną całość — zależnie od tego,
-                        czego potrzebuje Twój projekt.
+                        {{ __('site.oferta.lead') }}
                     </p>
                 </header>
 
                 <div class="cards">
                     <a class="card" href="#portfolio-grafika-3d">
                         <span class="card-num">01</span>
-                        <h3>Grafika 3D</h3>
-                        <p>Modelowanie, teksturowanie, oświetlenie i rendering. Wizualizacje produktowe, packshoty, sceny i assety.</p>
+                        <h3>{{ __('site.oferta.card_grafika_3d_title') }}</h3>
+                        <p>{{ __('site.oferta.card_grafika_3d_text') }}</p>
                     </a>
                     <a class="card" href="#portfolio-grafika-2d">
                         <span class="card-num">02</span>
-                        <h3>Grafika 2D</h3>
-                        <p>Ilustracje, key visuale, plakaty, grafiki do social mediów, opakowania i materiały reklamowe.</p>
+                        <h3>{{ __('site.oferta.card_grafika_2d_title') }}</h3>
+                        <p>{{ __('site.oferta.card_grafika_2d_text') }}</p>
                     </a>
                     <a class="card" href="#portfolio-animacja-i-film">
                         <span class="card-num">03</span>
-                        <h3>Animacja i Film</h3>
-                        <p>Animacje 3D i 2D, motion design oraz realizacja filmowa — od scenariusza i planu zdjęciowego po spoty, intra i loopy.</p>
+                        <h3>{{ __('site.oferta.card_animacja_title') }}</h3>
+                        <p>{{ __('site.oferta.card_animacja_text') }}</p>
                     </a>
                     <a class="card" href="#portfolio-360-interaktywnie">
                         <span class="card-num">04</span>
-                        <h3>360 Interaktywnie</h3>
-                        <p>Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.</p>
+                        <h3>{{ __('site.oferta.card_360_title') }}</h3>
+                        <p>{{ __('site.oferta.card_360_text') }}</p>
                     </a>
                     <a class="card" href="#portfolio-fotografia">
                         <span class="card-num">05</span>
-                        <h3>Fotografia</h3>
-                        <p>Sesje produktowe, wnętrzarskie i wizerunkowe wraz z retuszem i obróbką w wysokiej jakości.</p>
+                        <h3>{{ __('site.oferta.card_fotografia_title') }}</h3>
+                        <p>{{ __('site.oferta.card_fotografia_text') }}</p>
                     </a>
                 </div>
             </div>
@@ -145,23 +146,20 @@
         <section id="o-mnie" class="section section--alt">
             <div class="container about">
                 <div>
-                    <p class="eyebrow">O mnie</p>
-                    <h2 class="section-title">Zadbam o to, żeby Twój projekt wyglądał profesjonalnie</h2>
+                    <p class="eyebrow">{{ __('site.about.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.about.title') }}</h2>
                     <p class="section-text">
-                        Od lat zajmuję się grafiką 3D i 2D, animacją oraz produkcją filmową.
-                        Prowadzę projekt kompleksowo — od koncepcji, przez produkcję,
-                        aż po montaż i postprodukcję — dbając o spójny styl i dopięty każdy detal.
+                        {{ __('site.about.text_1') }}
                     </p>
                     <p class="section-text">
-                        Pracuję bezpośrednio z klientem, bez pośredników. Dzięki temu ustalenia
-                        są szybkie, a efekt zgodny z tym, co ustaliliśmy na starcie.
+                        {{ __('site.about.text_2') }}
                     </p>
                 </div>
                 <ul class="facts">
-                    <li><strong>20+ lat</strong><span>doświadczeń w zakresie szeroko pojętej grafiki i multimediów</span></li>
-                    <li><strong>500+</strong><span>zrealizowanych projektów</span></li>
-                    <li><strong>Bezpośredni</strong><span>kontakt na każdym etapie</span></li>
-                    <li><strong>Kreatywność</strong><span>poparta warsztatem technicznym</span></li>
+                    <li><strong>{{ __('site.about.fact_1_num') }}</strong><span>{{ __('site.about.fact_1_text') }}</span></li>
+                    <li><strong>{{ __('site.about.fact_2_num') }}</strong><span>{{ __('site.about.fact_2_text') }}</span></li>
+                    <li><strong>{{ __('site.about.fact_3_num') }}</strong><span>{{ __('site.about.fact_3_text') }}</span></li>
+                    <li><strong>{{ __('site.about.fact_4_num') }}</strong><span>{{ __('site.about.fact_4_text') }}</span></li>
                 </ul>
             </div>
         </section>
@@ -170,25 +168,25 @@
         <section class="section">
             <div class="container">
                 <header class="section-head">
-                    <p class="eyebrow">Dlaczego warto</p>
-                    <h2 class="section-title">Współpraca, która się broni</h2>
+                    <p class="eyebrow">{{ __('site.why.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.why.title') }}</h2>
                 </header>
                 <div class="reasons">
                     <div class="reason">
-                        <h3>Estetyka, która pracuje na efekt</h3>
-                        <p>Obraz ma nie tylko wyglądać dobrze — ma sprzedawać, budować markę i przyciągać widza.</p>
+                        <h3>{{ __('site.why.reason_1_title') }}</h3>
+                        <p>{{ __('site.why.reason_1_text') }}</p>
                     </div>
                     <div class="reason">
-                        <h3>Jeden wykonawca, pełen zakres</h3>
-                        <p>Grafika, animacja, zdjęcia, montaż i postprodukcja w jednym miejscu — bez rozproszonej odpowiedzialności.</p>
+                        <h3>{{ __('site.why.reason_2_title') }}</h3>
+                        <p>{{ __('site.why.reason_2_text') }}</p>
                     </div>
                     <div class="reason">
-                        <h3>Projekty szyte na miarę</h3>
-                        <p>Żadnych gotowców. Każda realizacja powstaje od zera pod konkretny cel i odbiorcę.</p>
+                        <h3>{{ __('site.why.reason_3_title') }}</h3>
+                        <p>{{ __('site.why.reason_3_text') }}</p>
                     </div>
                     <div class="reason">
-                        <h3>Wsparcie po oddaniu materiału</h3>
-                        <p>Zostaję do dyspozycji przy poprawkach, kolejnych formatach i rozwijaniu projektu.</p>
+                        <h3>{{ __('site.why.reason_4_title') }}</h3>
+                        <p>{{ __('site.why.reason_4_text') }}</p>
                     </div>
                 </div>
             </div>
@@ -198,9 +196,9 @@
         <section id="portfolio" class="section section--alt">
             <div class="container">
                 <header class="section-head">
-                    <p class="eyebrow">Portfolio</p>
-                    <h2 class="section-title">Zobacz, co możemy razem stworzyć</h2>
-                    <p class="section-text">Wybrane kadry z realizacji, podzielone tak samo jak oferta.</p>
+                    <p class="eyebrow">{{ __('site.portfolio_section.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.portfolio_section.title') }}</h2>
+                    <p class="section-text">{{ __('site.portfolio_section.lead') }}</p>
                 </header>
 
                 <div class="portfolio-groups">
@@ -210,13 +208,13 @@
                             <div class="portfolio-group-head">
                                 <span class="portfolio-group-num">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
                                 <h3 class="portfolio-group-title">{{ $group['title'] }}</h3>
-                                <a href="{{ route('portfolio.category', $group['slug']) }}" class="portfolio-group-link">Zobacz całą galerię &rarr;</a>
+                                <a href="{{ localized_route('portfolio.category', $group['slug']) }}" class="portfolio-group-link">{!! __('site.portfolio_section.see_gallery') !!}</a>
                             </div>
 
                             @if(count($media))
                                 <div class="gallery">
                                     @foreach($media as $item)
-                                        <a href="{{ route('portfolio.category', $group['slug']) }}" class="gallery-item">
+                                        <a href="{{ localized_route('portfolio.category', $group['slug']) }}" class="gallery-item">
                                             @if($item['type'] === 'video')
                                                 <video src="{{ $item['src'] }}" muted playsinline preload="metadata"></video>
                                                 <span class="gallery-item-play" aria-hidden="true"></span>
@@ -230,7 +228,7 @@
                                     @endforeach
                                 </div>
                             @else
-                                <p class="portfolio-empty">Wkrótce nowe realizacje.</p>
+                                <p class="portfolio-empty">{{ __('site.portfolio_section.coming_soon') }}</p>
                             @endif
                         </div>
                     @endforeach
@@ -242,14 +240,14 @@
         <section class="section section--alt stats-section">
             <div class="container">
                 <header class="section-head">
-                    <p class="eyebrow">Zaufali mi</p>
-                    <h2 class="section-title">Liczby, które mówią same za siebie</h2>
+                    <p class="eyebrow">{{ __('site.stats.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.stats.title') }}</h2>
                 </header>
                 <div class="stats">
-                    <div class="stat"><strong>20+</strong><span>lat doświadczenia</span></div>
-                    <div class="stat"><strong>100+</strong><span>zadowolonych klientów</span></div>
-                    <div class="stat"><strong>500+</strong><span>ukończonych projektów</span></div>
-                    <div class="stat"><strong>&#8734;</strong><span>wypitych kaw</span></div>
+                    <div class="stat"><strong>{{ __('site.stats.stat_1_num') }}</strong><span>{{ __('site.stats.stat_1_text') }}</span></div>
+                    <div class="stat"><strong>{{ __('site.stats.stat_2_num') }}</strong><span>{{ __('site.stats.stat_2_text') }}</span></div>
+                    <div class="stat"><strong>{{ __('site.stats.stat_3_num') }}</strong><span>{{ __('site.stats.stat_3_text') }}</span></div>
+                    <div class="stat"><strong>{!! __('site.stats.stat_4_num') !!}</strong><span>{{ __('site.stats.stat_4_text') }}</span></div>
                 </div>
             </div>
         </section>
@@ -258,34 +256,16 @@
         <section id="faq" class="section">
             <div class="container">
                 <header class="section-head">
-                    <p class="eyebrow">FAQ</p>
-                    <h2 class="section-title">Często zadawane pytania</h2>
+                    <p class="eyebrow">{{ __('site.faq.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.faq.title') }}</h2>
                 </header>
                 <div class="faq">
-                    <details>
-                        <summary>Ile trwa realizacja projektu?</summary>
-                        <p>Zależnie od zakresu: pojedyncza grafika to kilka dni, rozbudowana animacja lub film — od dwóch do kilku tygodni. Termin ustalamy na starcie.</p>
-                    </details>
-                    <details>
-                        <summary>Jak wygląda współpraca krok po kroku?</summary>
-                        <p>Brief i wycena, akceptacja koncepcji, produkcja, prezentacja wersji roboczej, runda poprawek i przekazanie plików w docelowych formatach.</p>
-                    </details>
-                    <details>
-                        <summary>Czy przygotowujesz materiał 3D i 2D w jednym projekcie?</summary>
-                        <p>Tak. Często łączę render 3D z grafiką 2D i motion designem, żeby całość tworzyła spójny materiał.</p>
-                    </details>
-                    <details>
-                        <summary>Ile poprawek jest w cenie?</summary>
-                        <p>Standardowo dwie rundy poprawek na etapie akceptacji. Większe zmiany kierunku wyceniam osobno.</p>
-                    </details>
-                    <details>
-                        <summary>W jakich formatach dostanę gotowy materiał?</summary>
-                        <p>Grafika: JPG, PNG, PDF, pliki źródłowe. Wideo: MP4 w wybranej rozdzielczości oraz warianty pod social media (pion, kwadrat, poziom).</p>
-                    </details>
-                    <details>
-                        <summary>Czy robisz zdjęcia produktowe do renderów?</summary>
-                        <p>Tak — sesja fotograficzna może być podstawą do dalszej obróbki, kompozycji lub materiału 3D.</p>
-                    </details>
+                    @for($i = 1; $i <= 6; $i++)
+                        <details>
+                            <summary>{{ __('site.faq.q'.$i) }}</summary>
+                            <p>{{ __('site.faq.a'.$i) }}</p>
+                        </details>
+                    @endfor
                 </div>
             </div>
         </section>
@@ -294,29 +274,27 @@
         <section id="kontakt" class="section section--alt">
             <div class="container contact">
                 <div>
-                    <p class="eyebrow">Kontakt</p>
-                    <h2 class="section-title">Twój nowy projekt zaczyna się tutaj</h2>
+                    <p class="eyebrow">{{ __('site.contact.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.contact.title') }}</h2>
                     <p class="section-text">
-                        Napisz, co chcesz zrealizować — grafikę, animację, film czy sesję.
-                        Odezwę się z pytaniami i wstępną wyceną.
+                        {{ __('site.contact.lead') }}
                     </p>
                     <ul class="contact-list">
-                        {{-- Podmień na swoje dane --}}
-                        <li><span>E-mail</span><a href="mailto:rojekmar@gmail.com">rojekmar@gmail.com</a></li>
-                        <li><span>Telefon</span><a href="tel:+48506992772">+48 506 992 772</a></li>
+                        <li><span>{{ __('site.contact.email_label') }}</span><a href="mailto:rojekmar@gmail.com">rojekmar@gmail.com</a></li>
+                        <li><span>{{ __('site.contact.phone_label') }}</span><a href="tel:+48506992772">+48 506 992 772</a></li>
                     </ul>
                 </div>
 
-                <form class="contact-form" method="POST" action="{{ route('contact.store') }}">
+                <form class="contact-form" method="POST" action="{{ localized_route('contact.store') }}">
                     @csrf
 
                     @if(session('contact_status') === 'success')
-                        <p class="form-alert form-alert--success">Dziękuję! Wiadomość została wysłana — odezwę się wkrótce.</p>
+                        <p class="form-alert form-alert--success">{{ __('site.contact.success') }}</p>
                     @endif
 
                     @if($errors->any())
                         <p class="form-alert form-alert--error">
-                            Popraw poniższe pola:
+                            {{ __('site.contact.error_intro') }}
                             <ul>
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -328,27 +306,27 @@
                     {{-- Pole-pułapka na boty — ukryte dla ludzi przez CSS --}}
                     <input type="text" name="website" tabindex="-1" autocomplete="off" class="form-honeypot">
 
-                    <label>Imię
+                    <label>{{ __('site.contact.field_name') }}
                         <input type="text" name="name" value="{{ old('name') }}" autocomplete="name" required>
                     </label>
-                    <label>E-mail
+                    <label>{{ __('site.contact.field_email') }}
                         <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required>
                     </label>
-                    <label>Telefon
+                    <label>{{ __('site.contact.field_phone') }}
                         <input type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel">
                     </label>
-                    <label>Rodzaj projektu
+                    <label>{{ __('site.contact.field_type') }}
                         <select name="type">
-                            @foreach(['Grafika 3D', 'Grafika 2D', 'Animacja i Film', 'Fotografia'] as $option)
+                            @foreach(__('site.contact.type_options') as $option)
                                 <option @selected(old('type') === $option)>{{ $option }}</option>
                             @endforeach
                         </select>
                     </label>
-                    <label>Wiadomość
+                    <label>{{ __('site.contact.field_message') }}
                         <textarea name="message" rows="4" required>{{ old('message') }}</textarea>
                     </label>
-                    <button type="submit" class="btn">Wyślij zapytanie</button>
-                    <p class="form-note">Wysyłając formularz, zgadzasz się na kontakt w sprawie zapytania.</p>
+                    <button type="submit" class="btn">{{ __('site.contact.submit') }}</button>
+                    <p class="form-note">{{ __('site.contact.note') }}</p>
                 </form>
             </div>
         </section>

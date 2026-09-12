@@ -49,14 +49,21 @@ if (! function_exists('portfolio_categories')) {
      */
     function portfolio_categories(): array
     {
+        // Foldery ('dir'/'video_dir'/'three_sixty_dir'/'preview_dir') wskazują
+        // na prawdziwe pliki na dysku — te same niezależnie od języka. Tylko
+        // 'title'/'description' (i tytuły grup) mają wersję angielską.
+        $en = app()->getLocale() === 'en';
+
         return [
             [
                 'slug' => 'grafika-3d',
-                'title' => 'Grafika 3D i wizualizacje',
-                'description' => 'Modelowanie, teksturowanie, oświetlenie i rendering. Wizualizacje architektoniczne, produktowe, packshoty, sceny i assety.',
+                'title' => $en ? '3D Graphics & Visualizations' : 'Grafika 3D i wizualizacje',
+                'description' => $en
+                    ? '3D modeling, texturing, lighting and rendering. Architectural and product visualizations, packshots, scenes and assets.'
+                    : 'Modelowanie, teksturowanie, oświetlenie i rendering. Wizualizacje architektoniczne, produktowe, packshoty, sceny i assety.',
                 'groups' => [
-                    ['title' => '3D Architektonicznie', 'dir' => 'assets/grafiki_animacje/3d architektonicznie'],
-                    ['title' => '3D produktowe', 'dir' => 'assets/grafiki_animacje/3d produktowe'],
+                    ['title' => $en ? 'Architectural 3D' : '3D Architektonicznie', 'dir' => 'assets/grafiki_animacje/3d architektonicznie'],
+                    ['title' => $en ? 'Product 3D' : '3D produktowe', 'dir' => 'assets/grafiki_animacje/3d produktowe'],
                 ],
                 // Podgląd na stronie głównej (portfolio_preview_media) ma
                 // pokazywać zdjęcia tylko z tego folderu, nie z obu grup —
@@ -65,29 +72,37 @@ if (! function_exists('portfolio_categories')) {
             ],
             [
                 'slug' => 'grafika-2d',
-                'title' => 'Grafika 2D',
+                'title' => $en ? '2D Graphics' : 'Grafika 2D',
                 'dir' => 'assets/grafiki_animacje/2d',
-                'description' => 'Ilustracje, key visuale, plakaty, grafiki do social mediów, opakowania i materiały reklamowe.',
+                'description' => $en
+                    ? 'Illustrations, key visuals, posters, social media graphics, packaging and marketing materials.'
+                    : 'Ilustracje, key visuale, plakaty, grafiki do social mediów, opakowania i materiały reklamowe.',
             ],
             [
                 'slug' => 'animacja-i-film',
-                'title' => 'Animacja i Film',
+                'title' => $en ? 'Animation & Film' : 'Animacja i Film',
                 'video_dir' => 'assets/grafiki_animacje/animacja',
-                'description' => 'Animacje 3D i 2D, motion design oraz realizacja filmowa — od scenariusza i planu zdjęciowego po spoty, intra i loopy.',
+                'description' => $en
+                    ? '3D and 2D animation, motion design and film production — from script and shoot planning to spots, intros and loops.'
+                    : 'Animacje 3D i 2D, motion design oraz realizacja filmowa — od scenariusza i planu zdjęciowego po spoty, intra i loopy.',
             ],
             [
                 'slug' => '360-interaktywnie',
-                'title' => '360 Interaktywnie',
+                'title' => $en ? '360° Interactive' : '360 Interaktywnie',
                 'three_sixty_dir' => 'assets/grafiki_animacje/360',
-                'description' => 'Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.',
+                'description' => $en
+                    ? 'Interactive 360° presentations — rotatable visualizations and panoramas visitors can explore themselves in the browser.'
+                    : 'Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.',
             ],
             [
                 'slug' => 'fotografia',
-                'title' => 'Fotografia',
-                'description' => 'Sesje produktowe, wnętrzarskie i wizerunkowe wraz z retuszem i obróbką w wysokiej jakości.',
+                'title' => $en ? 'Photography' : 'Fotografia',
+                'description' => $en
+                    ? 'Product, interior and portrait photo sessions, with high-quality retouching and post-processing.'
+                    : 'Sesje produktowe, wnętrzarskie i wizerunkowe wraz z retuszem i obróbką w wysokiej jakości.',
                 'groups' => [
-                    ['title' => 'Fotografia produktowa', 'dir' => 'assets/grafiki_animacje/fotografia produktowa'],
-                    ['title' => 'Fotografia - Sesje', 'dir' => 'assets/grafiki_animacje/fotografia sesje'],
+                    ['title' => $en ? 'Product Photography' : 'Fotografia produktowa', 'dir' => 'assets/grafiki_animacje/fotografia produktowa'],
+                    ['title' => $en ? 'Photo Sessions' : 'Fotografia - Sesje', 'dir' => 'assets/grafiki_animacje/fotografia sesje'],
                 ],
             ],
         ];
@@ -275,5 +290,56 @@ if (! function_exists('get_360_from_dir')) {
         }
 
         return $items;
+    }
+}
+
+if (! function_exists('localized_route')) {
+    /**
+     * Jak route(), ale automatycznie dodaje prefiks "en." do nazwy trasy,
+     * gdy aktualny język strony to angielski. Dzięki temu współdzielone
+     * widoki (partials/header.blade.php, welcome.blade.php itd. — te same
+     * pliki dla obu języków) generują poprawne linki niezależnie od tego,
+     * czy renderowane są w wersji polskiej, czy angielskiej.
+     *
+     * Uwaga: celowo w media.php, a nie w osobnym pliku — ten plik jest już
+     * zarejestrowany w composer.json (autoload.files) i wdrożony na
+     * produkcji, więc dopisanie tu funkcji nie wymaga aktualizacji
+     * vendor/composer/* (którego deploy nie wgrywa, gdy composer.lock się
+     * nie zmienił — patrz DEPLOY.md).
+     */
+    function localized_route(string $name, $parameters = [], bool $absolute = true): string
+    {
+        if (app()->getLocale() === 'en' && ! str_starts_with($name, 'en.')) {
+            $name = 'en.'.$name;
+        }
+
+        return route($name, $parameters, $absolute);
+    }
+}
+
+if (! function_exists('alternate_locale_url')) {
+    /**
+     * Adres BIEŻĄCEJ strony w drugim języku — do przełącznika języka w
+     * nagłówku i do tagów <link rel="alternate" hreflang> w <head>.
+     * Działa tylko dla tras zarejestrowanych w obu wersjach (home,
+     * portfolio.category) — dla pozostałych (np. /sitemap.xml) zwraca null.
+     */
+    function alternate_locale_url(): ?string
+    {
+        $routeName = request()->route()?->getName();
+
+        if (! $routeName) {
+            return null;
+        }
+
+        $isEnglish = str_starts_with($routeName, 'en.');
+        $baseName = $isEnglish ? substr($routeName, 3) : $routeName;
+        $targetName = $isEnglish ? $baseName : 'en.'.$baseName;
+
+        if (! \Illuminate\Support\Facades\Route::has($targetName)) {
+            return null;
+        }
+
+        return route($targetName, request()->route()->parameters());
     }
 }

@@ -105,6 +105,20 @@ zmienne repo) — prościej, bo token użyty do konfiguracji nie miał
 uprawnień do zakładki "Variables". Można to zmienić w
 `.github/workflows/deploy.yml`, jeśli zajdzie taka potrzeba.
 
+**Pułapka: nowy plik w `composer.json` → `autoload.files`.** Deploy
+wgrywa `vendor/` tylko wtedy, gdy zmienił się `composer.lock` (patrz
+sekcja "Szybkość wdrożenia" wyżej) — a edycja samej sekcji `autoload`
+w `composer.json` NIE zmienia `composer.lock` (jego hash liczy się z
+innych pól). Efekt: gdybyś dodał nowy plik helperów przez
+`composer.json` (zamiast dopisać funkcje do już zarejestrowanego
+`app/Helpers/media.php`), produkcja dostałaby kod wołający funkcję z
+pliku, którego `vendor/composer/autoload_static.php` na serwerze
+jeszcze nie zna — `Call to undefined function`. Najprościej: nowe
+funkcje pomocnicze dopisuj do `media.php`, chyba że naprawdę
+potrzebujesz osobnego pliku — wtedy trzeba też wymusić pełny upload
+`vendor/` przy tym jednym deployu (np. zmieniając cokolwiek w
+`composer.lock`, choćby przelicenie go ponownie).
+
 ## Aktualizacja treści portfolio (zdjęcia/filmy)
 
 Osobny proces od wdrażania kodu — folder `grafiki_animacje/` jest

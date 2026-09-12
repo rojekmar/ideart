@@ -8,7 +8,7 @@
 @if(count($items))
     <div class="gallery gallery--thumbs" data-lightbox>
         @foreach($items as $item)
-            @php($kind = $item['type'] === 'video' ? 'film' : ($item['type'] === '360' ? 'prezentacja 360°' : 'zdjęcie'))
+            @php($kind = $item['type'] === 'video' ? __('site.gallery.kind_video') : ($item['type'] === '360' ? __('site.gallery.kind_360') : __('site.gallery.kind_image')))
             <button
                 type="button"
                 class="gallery-item{{ $item['type'] === 'video' ? ' gallery-item--video' : '' }}{{ $item['type'] === '360' ? ' gallery-item--360' : '' }}"
@@ -21,14 +21,14 @@
                     <video src="{{ $item['src'] }}" muted playsinline preload="metadata"></video>
                     <span class="gallery-item-play" aria-hidden="true"></span>
                 @elseif($item['type'] === '360')
-                    <img src="{{ $item['thumb'] }}" alt="{{ $label }} — prezentacja 360° {{ $loop->iteration }}" loading="lazy">
+                    <img src="{{ $item['thumb'] }}" alt="{{ $label }} — {{ __('site.gallery.kind_360') }} {{ $loop->iteration }}" loading="lazy">
                     <span class="gallery-item-badge" aria-hidden="true">360&deg;</span>
                 @else
-                    <img src="{{ $item['src'] }}" alt="{{ $label }} — zdjęcie {{ $loop->iteration }}" loading="lazy">
+                    <img src="{{ $item['src'] }}" alt="{{ $label }} — {{ __('site.gallery.kind_image') }} {{ $loop->iteration }}" loading="lazy">
                 @endif
             </button>
         @endforeach
     </div>
 @else
-    <p class="portfolio-empty">Wkrótce nowe realizacje.</p>
+    <p class="portfolio-empty">{{ __('site.portfolio_section.coming_soon') }}</p>
 @endif
