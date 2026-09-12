@@ -58,6 +58,10 @@ if (! function_exists('portfolio_categories')) {
                     ['title' => '3D Architektonicznie', 'dir' => 'assets/grafiki_animacje/3d architektonicznie'],
                     ['title' => '3D produktowe', 'dir' => 'assets/grafiki_animacje/3d produktowe'],
                 ],
+                // Podgląd na stronie głównej (portfolio_preview_media) ma
+                // pokazywać zdjęcia tylko z tego folderu, nie z obu grup —
+                // patrz portfolio_preview_media() w tym pliku.
+                'preview_dir' => 'assets/grafiki_animacje/3d architektonicznie',
             ],
             [
                 'slug' => 'grafika-2d',
@@ -176,9 +180,23 @@ if (! function_exists('portfolio_preview_media')) {
      * Podgląd kategorii na stronie głównej — $count materiałów rozłożonych
      * równomiernie w czasie (od najnowszych po najstarsze), żeby pokazać
      * przekrój prac z różnych okresów zamiast tylko ostatnio dodanych.
+     *
+     * Klucz 'preview_dir' (opcjonalny) zawęża podgląd do jednego folderu —
+     * przydatne dla kategorii złożonych z kilku grup (np. Grafika 3D:
+     * "3D Architektonicznie" + "3D produktowe"), gdy podgląd na stronie
+     * głównej ma pokazywać tylko jedną z nich, a nie wszystkie razem.
      */
     function portfolio_preview_media(array $category, int $count = 3): array
     {
+        if (! empty($category['preview_dir'])) {
+            $items = array_map(
+                fn (string $src) => ['type' => 'image', 'src' => $src],
+                get_images_from_dir($category['preview_dir'])
+            );
+
+            return evenly_spaced_sample($items, $count);
+        }
+
         return evenly_spaced_sample(portfolio_category_media($category), $count);
     }
 }
