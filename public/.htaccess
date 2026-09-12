@@ -5,15 +5,19 @@
 
     RewriteEngine On
 
-    # Wymuszenie HTTPS — %{HTTPS} poprawnie odzwierciedla prawdziwy protokół
-    # klienta (zweryfikowane bezpośrednio na produkcji: proxy przed serwerem
-    # przekazuje X-Forwarded-Proto, a PHP/Apache ustawiają $_SERVER['HTTPS']
-    # zgodnie z nim), więc to bezpieczne — nie ma ryzyka pętli przekierowań
-    # dla odwiedzających już na https. Wykluczone localhost/127.0.0.1 — lokalny
-    # XAMPP nie ma skonfigurowanego HTTPS, więc reguła nie działa lokalnie.
+    # Wymuszenie HTTPS — tylko dla prawdziwej domeny produkcyjnej (whitelist),
+    # a nie "wszystko oprócz paru znanych lokalnych nazw" (blacklist) — to
+    # drugie okazało się kruche: lokalny XAMPP ma oprócz "localhost" jeszcze
+    # dodatkowy vhost "mojastrona.localhost" (ten sam projekt, bez HTTPS),
+    # którego blacklista nie znała, więc reguła próbowała przekierować go na
+    # nieistniejące https:// i przeglądarka nie mogła się połączyć. Whitelista
+    # nie ma tego problemu — każdy kolejny lokalny alias jest bezpieczny bez
+    # dopisywania go tutaj. %{HTTPS} poprawnie odzwierciedla prawdziwy protokół
+    # klienta na produkcji (zweryfikowane: proxy przekazuje X-Forwarded-Proto),
+    # więc nie ma ryzyka pętli przekierowań dla ruchu już na https.
     RewriteCond %{HTTPS} off
-    RewriteCond %{HTTP_HOST} !=localhost
-    RewriteCond %{HTTP_HOST} !=127.0.0.1
+    RewriteCond %{HTTP_HOST} =ideart.com.pl [OR]
+    RewriteCond %{HTTP_HOST} =www.ideart.com.pl
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # Handle Authorization Header
