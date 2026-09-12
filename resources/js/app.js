@@ -39,8 +39,10 @@ if (cursorGlow && window.matchMedia('(hover: hover) and (pointer: fine)').matche
 }
 
 // Miniaturki wideo: pokaż realną pierwszą klatkę zamiast czarnego kadru,
-// bez pobierania całego pliku (tylko metadane + drobny "seek").
-document.querySelectorAll('.gallery-item video').forEach(function (video) {
+// bez pobierania całego pliku (tylko metadane + drobny "seek"). Dotyczy
+// też tła w hero na podstronach kategorii złożonych wyłącznie z wideo
+// (video.hero-slide — patrz portfolio-category.blade.php).
+document.querySelectorAll('.gallery-item video, video.hero-slide').forEach(function (video) {
     video.addEventListener('loadedmetadata', function () {
         try { video.currentTime = 0.1; } catch (e) {}
     });

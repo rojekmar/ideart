@@ -196,11 +196,19 @@ a { color: inherit; text-decoration: none; }
     }
 }
 
+/* Statyczne tło na podstronach kategorii (jedno zdjęcie z galerii,
+   bez animacji cyklu suwaka ze strony głównej — patrz portfolio-category.blade.php). */
+.hero-slide--static {
+    opacity: 1;
+    animation: none;
+}
+
 /* Delikatny cień tekstu — czytelność sloganu niezależnie od jasności
    akurat wyświetlanego zdjęcia w tle. */
 .hero .eyebrow,
 .hero .hero-title,
-.hero .hero-lead {
+.hero .hero-lead,
+.hero .breadcrumb {
     text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
 }
 

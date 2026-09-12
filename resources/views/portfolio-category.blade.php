@@ -16,6 +16,28 @@
 
         {{-- ---------- INTRO ---------- --}}
         <section class="hero hero--category">
+            @php
+                // Pierwsza "grafika" z galerii tej kategorii jako tło — ten sam
+                // styl co suwak na stronie głównej, ale jedno statyczne zdjęcie
+                // (bez animacji cyklu). Dla '360' bierzemy miniaturkę. Kategorie
+                // złożone wyłącznie z wideo (np. Animacja i Film) dostają zamiast
+                // zdjęcia pierwszą klatkę pierwszego filmu (ten sam trik co przy
+                // miniaturkach wideo w galerii — patrz app.js).
+                $heroBgItem = collect($media)->first(fn ($item) => in_array($item['type'], ['image', '360']));
+                $heroBgSrc = $heroBgItem ? ($heroBgItem['type'] === '360' ? $heroBgItem['thumb'] : $heroBgItem['src']) : null;
+                $heroBgVideo = $heroBgSrc ? null : collect($media)->first(fn ($item) => $item['type'] === 'video');
+            @endphp
+            @if($heroBgSrc)
+                <div class="hero-slider" aria-hidden="true">
+                    <img class="hero-slide hero-slide--static" src="{{ $heroBgSrc }}" alt="" loading="eager" fetchpriority="high">
+                </div>
+                <div class="hero-overlay" aria-hidden="true"></div>
+            @elseif($heroBgVideo)
+                <div class="hero-slider" aria-hidden="true">
+                    <video class="hero-slide hero-slide--static" src="{{ $heroBgVideo['src'] }}" muted playsinline preload="metadata"></video>
+                </div>
+                <div class="hero-overlay" aria-hidden="true"></div>
+            @endif
             <div class="container">
                 <a href="{{ route('home') }}#portfolio" class="breadcrumb">&larr; Wróć do Portfolio</a>
                 <p class="eyebrow">Portfolio</p>
