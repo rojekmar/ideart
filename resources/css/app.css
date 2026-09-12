@@ -805,8 +805,12 @@ button.gallery-item:focus-visible {
 .form-note { margin: 0; font-size: 0.8rem; color: var(--text-dim); }
 
 /* Pole-pułapka na boty — niewidoczne dla ludzi, ale wciąż w DOM/tab order
-   je nie umieszczamy, więc tabindex="-1" na formularzu dodatkowo chroni */
-.form-honeypot {
+   je nie umieszczamy, więc tabindex="-1" na formularzu dodatkowo chroni.
+   Selektor musi być bardziej specyficzny niż ".contact-form input" (klasa
+   + tag) — inaczej width:100% stamtąd wygrywa i pole (position:absolute
+   bez pozycjonowanego rodzica, więc % liczone od viewportu) rozciąga się
+   na cały ekran, powodując poziomy scroll strony. */
+.contact-form .form-honeypot {
     position: absolute;
     width: 1px;
     height: 1px;
