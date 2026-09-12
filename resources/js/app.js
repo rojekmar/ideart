@@ -192,6 +192,39 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
         if (e.target === overlay) closeLightbox();
     });
 
+    // Przesunięcie palcem (mobile) — działa obok strzałek, nie zamiast nich.
+    // Liczony jest tylko wyraźnie poziomy gest (dłuższy niż pionowy i
+    // przekraczający próg), żeby nie kolidować ze scrubowaniem wideo/
+    // przeciąganiem panoramy 360 ani z przypadkowym drgnięciem palca.
+    var touchStartX = null;
+    var touchStartY = null;
+
+    overlay.addEventListener('touchstart', function (e) {
+        if (e.touches.length !== 1) return;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    overlay.addEventListener('touchend', function (e) {
+        if (touchStartX === null) return;
+
+        var touch = e.changedTouches[0];
+        var deltaX = touch.clientX - touchStartX;
+        var deltaY = touch.clientY - touchStartY;
+        touchStartX = null;
+        touchStartY = null;
+
+        var SWIPE_THRESHOLD = 50;
+        if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
+        if (Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
+
+        if (deltaX > 0) {
+            showPrev();
+        } else {
+            showNext();
+        }
+    }, { passive: true });
+
     document.addEventListener('keydown', function (e) {
         if (overlay.hidden) return;
         if (e.key === 'Escape') closeLightbox();
