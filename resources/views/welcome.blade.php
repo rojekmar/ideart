@@ -73,7 +73,7 @@
                     <p class="eyebrow">Oferta</p>
                     <h2 class="section-title">Co mogę dla Ciebie stworzyć?</h2>
                     <p class="section-text">
-                        Cztery obszary, które łączę w spójną całość — zależnie od tego,
+                        Pięć obszarów, które łączę w spójną całość — zależnie od tego,
                         czego potrzebuje Twój projekt.
                     </p>
                 </header>
@@ -98,6 +98,11 @@
                         <span class="card-num">04</span>
                         <h3>Fotografia</h3>
                         <p>Sesje produktowe, wnętrzarskie i wizerunkowe wraz z retuszem i obróbką w wysokiej jakości.</p>
+                    </a>
+                    <a class="card" href="#portfolio-360-interaktywnie">
+                        <span class="card-num">05</span>
+                        <h3>360 Interaktywnie</h3>
+                        <p>Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.</p>
                     </a>
                 </div>
             </div>
@@ -182,6 +187,9 @@
                                             @if($item['type'] === 'video')
                                                 <video src="{{ $item['src'] }}" muted playsinline preload="metadata"></video>
                                                 <span class="gallery-item-play" aria-hidden="true"></span>
+                                            @elseif($item['type'] === '360')
+                                                <img src="{{ $item['thumb'] }}" alt="{{ $group['title'] }}" loading="lazy">
+                                                <span class="gallery-item-badge" aria-hidden="true">360&deg;</span>
                                             @else
                                                 <img src="{{ $item['src'] }}" alt="{{ $group['title'] }}" loading="lazy">
                                             @endif

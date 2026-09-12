@@ -54,6 +54,7 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
 
     var imageEl = overlay.querySelector('[data-lightbox-image]');
     var videoEl = overlay.querySelector('[data-lightbox-video]');
+    var iframeEl = overlay.querySelector('[data-lightbox-iframe]');
     var closeBtn = overlay.querySelector('[data-lightbox-close]');
     var prevBtn = overlay.querySelector('[data-lightbox-prev]');
     var nextBtn = overlay.querySelector('[data-lightbox-next]');
@@ -83,15 +84,23 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
         videoEl.load();
     }
 
+    function stopIframe() {
+        iframeEl.removeAttribute('src');
+    }
+
     // autoplay: odtwórz automatycznie tylko przy bezpośrednim kliknięciu
     // w miniaturkę — nie przy przełączaniu strzałkami (część przeglądarek
     // blokuje wtedy dźwięk, bo to już nie jest bezpośrednia akcja użytkownika).
     function render(autoplay) {
         var current = items[currentIndex];
 
+        imageEl.hidden = true;
+        videoEl.hidden = true;
+        iframeEl.hidden = true;
+
         if (current.type === 'video') {
-            imageEl.hidden = true;
             imageEl.removeAttribute('src');
+            stopIframe();
 
             videoEl.hidden = false;
             videoEl.src = current.src;
@@ -100,9 +109,16 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
                 var playPromise = videoEl.play();
                 if (playPromise && playPromise.catch) playPromise.catch(function () {});
             }
+        } else if (current.type === '360') {
+            stopVideo();
+            imageEl.removeAttribute('src');
+
+            iframeEl.hidden = false;
+            iframeEl.src = current.src;
+            iframeEl.setAttribute('title', current.label);
         } else {
             stopVideo();
-            videoEl.hidden = true;
+            stopIframe();
 
             imageEl.hidden = false;
             imageEl.src = current.src;
@@ -131,6 +147,7 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
         overlay.classList.remove('is-open');
         document.body.style.overflow = '';
         stopVideo();
+        stopIframe();
         if (lastFocused) lastFocused.focus();
 
         window.setTimeout(function () {
@@ -144,7 +161,8 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
     // inaczej (np. przy przejściu ze zdjęcia na film) wygaszony zostałby
     // element, który wcale nie jest jeszcze widoczny.
     function navigate(delta) {
-        var activeEl = items[currentIndex].type === 'video' ? videoEl : imageEl;
+        var currentType = items[currentIndex].type;
+        var activeEl = currentType === 'video' ? videoEl : (currentType === '360' ? iframeEl : imageEl);
         stopVideo();
         activeEl.classList.add('is-fading');
 
@@ -154,6 +172,7 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
             render(false);
             imageEl.classList.remove('is-fading');
             videoEl.classList.remove('is-fading');
+            iframeEl.classList.remove('is-fading');
         }, 280);
     }
 

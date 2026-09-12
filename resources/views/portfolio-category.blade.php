@@ -68,6 +68,7 @@
                 <button type="button" class="lightbox-arrow lightbox-arrow--prev" data-lightbox-prev aria-label="Poprzednie zdjęcie">&larr;</button>
                 <img class="lightbox-media" data-lightbox-image src="" alt="" hidden>
                 <video class="lightbox-media" data-lightbox-video controls playsinline hidden></video>
+                <iframe class="lightbox-media lightbox-frame" data-lightbox-iframe src="" title="" allowfullscreen hidden></iframe>
                 <button type="button" class="lightbox-arrow lightbox-arrow--next" data-lightbox-next aria-label="Następne zdjęcie">&rarr;</button>
             </div>
         @endif

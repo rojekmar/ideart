@@ -80,15 +80,23 @@ if (! function_exists('portfolio_categories')) {
                     ['title' => 'Fotografia - Sesje', 'dir' => 'assets/grafiki_animacje/fotografia sesje'],
                 ],
             ],
+            [
+                'slug' => '360-interaktywnie',
+                'title' => '360 Interaktywnie',
+                'three_sixty_dir' => 'assets/grafiki_animacje/360',
+                'description' => 'Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.',
+            ],
         ];
     }
 }
 
 if (! function_exists('portfolio_group_media')) {
     /**
-     * Zwraca zdjęcia i filmy pojedynczej grupy/kategorii portfolio.
-     * Klucz 'dir' dostarcza zdjęcia, 'video_dir' — filmy; oba mogą
-     * współistnieć. Każdy element to ['type' => 'image'|'video', 'src' => url].
+     * Zwraca zdjęcia, filmy i prezentacje 360° pojedynczej grupy/kategorii
+     * portfolio. Klucz 'dir' dostarcza zdjęcia, 'video_dir' — filmy,
+     * 'three_sixty_dir' — prezentacje 360°; mogą współistnieć. Każdy
+     * element to ['type' => 'image'|'video'|'360', 'src' => url] (360 ma
+     * dodatkowo 'thumb' — miniaturkę do wyświetlenia w siatce/podglądzie).
      */
     function portfolio_group_media(array $group): array
     {
@@ -104,6 +112,10 @@ if (! function_exists('portfolio_group_media')) {
             foreach (get_videos_from_dir($group['video_dir']) as $src) {
                 $items[] = ['type' => 'video', 'src' => $src];
             }
+        }
+
+        if (! empty($group['three_sixty_dir'])) {
+            $items = array_merge($items, get_360_from_dir($group['three_sixty_dir']));
         }
 
         return $items;
@@ -178,5 +190,57 @@ if (! function_exists('get_videos_from_dir')) {
     function get_videos_from_dir(string $dir): array
     {
         return files_from_dir($dir, ['mp4', 'webm', 'ogg', 'mov', 'avi']);
+    }
+}
+
+if (! function_exists('get_360_from_dir')) {
+    /**
+     * Zwraca prezentacje 360° (własny viewer, plik .html) z podanego
+     * folderu — najnowsze pierwsze. Miniaturką każdej prezentacji jest
+     * plik graficzny o tej samej nazwie bazowej co plik .html
+     * (np. "hala.html" + "hala.jpg" obok siebie w tym samym folderze).
+     * Prezentacja bez pasującej miniatury jest pomijana.
+     */
+    function get_360_from_dir(string $dir): array
+    {
+        $full_path = public_path($dir);
+
+        if (! is_dir($full_path)) {
+            return [];
+        }
+
+        $thumbExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
+
+        $htmlFiles = [];
+        foreach (scandir($full_path) as $file) {
+            if ($file === '.' || $file === '..') continue;
+            if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) !== 'html') continue;
+            $htmlFiles[$file] = filemtime($full_path . DIRECTORY_SEPARATOR . $file);
+        }
+
+        arsort($htmlFiles);
+
+        $items = [];
+        foreach (array_keys($htmlFiles) as $file) {
+            $basename = pathinfo($file, PATHINFO_FILENAME);
+            $thumb = null;
+
+            foreach ($thumbExtensions as $ext) {
+                if (file_exists($full_path . DIRECTORY_SEPARATOR . $basename . '.' . $ext)) {
+                    $thumb = asset(rtrim($dir, '/') . '/' . $basename . '.' . $ext);
+                    break;
+                }
+            }
+
+            if (! $thumb) continue;
+
+            $items[] = [
+                'type' => '360',
+                'src' => asset(rtrim($dir, '/') . '/' . $file),
+                'thumb' => $thumb,
+            ];
+        }
+
+        return $items;
     }
 }
