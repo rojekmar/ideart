@@ -27,3 +27,7 @@ Thumbs.db
 # serwerze, NIE przez git (500+ MB, w tym pliki wideo grubo ponad limit
 # 100 MB/plik na GitHub). Wgrywaj/aktualizuj przez SFTP/rsync osobno.
 /public/assets/grafiki_animacje
+
+# Lokalne skrypty pomocnicze (zawierają dane logowania FTP) — patrz
+# DEPLOY.md. Celowo poza repozytorium, żeby hasło nie trafiło do GitHuba.
+/scripts/local

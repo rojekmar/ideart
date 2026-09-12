@@ -6,6 +6,47 @@ potrzeby logowania się na serwer.
 
 Strona działa pod: **https://ideart.com.pl/**
 
+## Codzienna procedura: jak wysłać lokalne zmiany na wersję online
+
+Są dwie zupełnie osobne ścieżki, zależnie od tego, co się zmieniło.
+
+### A) Zmiany w kodzie (Blade, PHP, CSS, JS, trasy, cokolwiek w `app/`,
+`resources/`, `routes/`, `config/`) — przez Git
+
+```powershell
+.\scripts\local\deploy.ps1 "opis zmiany"
+```
+
+(albo ręcznie: `git add -A`, `git commit -m "..."`, `git push origin main`)
+
+Push na `main` **sam** uruchamia GitHub Actions: buduje projekt
+(composer + `npm run build`) i wgrywa go przez FTP. Nic więcej nie trzeba
+robić. Postęp: `https://github.com/rojekmar/ideart/actions`.
+
+Uwaga lokalna: żeby zobaczyć zmiany CSS/JS na `localhost`, trzeba
+najpierw odpalić `npm run build` (albo `npm run dev` w trakcie pracy) —
+lokalnie serwowany jest skompilowany plik z `public/build/`, którego
+CI nie generuje za Ciebie na Twoim komputerze. Na produkcji buduje go CI.
+
+### B) Zdjęcia/filmy w galerii (`public/assets/grafiki_animacje/`) — przez FTP,
+NIE przez Git
+
+Ten folder jest celowo wykluczony z repozytorium (500+ MB) i deploy przez
+GitHub Actions go nie rusza.
+
+```powershell
+.\scripts\local\sync-media.ps1
+```
+
+Wysyła (mirror) lokalny folder na serwer. Strona sama wykrywa nowe pliki
+w katalogach galerii na żywo — nie trzeba nic przebudowywać.
+
+Oba skrypty leżą w `scripts/local/` i **nie są wersjonowane w git**
+(zawierają dane logowania FTP) — działają tylko na tej maszynie, na
+której je stworzono. Jeśli pracujesz z innego komputera, odtwórz je
+ręcznie z danymi z panelu cba.pl (treść do skopiowania: patrz historia
+tej rozmowy z Claude albo po prostu zapytaj Claude jeszcze raz).
+
 ## Struktura na serwerze
 
 cba.pl nazywa katalog domeny jej nazwą — **`/ideart.com.pl/`**, nie
