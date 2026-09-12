@@ -657,6 +657,8 @@ button.gallery-item:focus-visible {
 .lightbox-close,
 .lightbox-arrow {
     position: fixed;
+    z-index: 1; /* nad .lightbox-stage — bez tego strzalka "wstecz" (wczesniej
+        w DOM niz scena) chowa sie pod aktualnie wyswietlanym obrazem */
     display: flex;
     align-items: center;
     justify-content: center;
