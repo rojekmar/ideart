@@ -46,21 +46,26 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
     });
 });
 
-// Lightbox galerii (podstrony kategorii portfolio) — zdjęcia i filmy
+// Lightbox galerii (podstrony kategorii portfolio) — zdjęcia, filmy i
+// prezentacje 360°. Przejście między materiałami to "przeciągnięcie"
+// (poprzedni/następny wyjeżdża w bok, kolejny wjeżdża z przeciwnej
+// strony) — ten sam kierunek co gest swipe na dotyku.
 (function () {
     var overlay = document.querySelector('[data-lightbox-overlay]');
     var galleries = document.querySelectorAll('[data-lightbox]');
     if (!overlay || !galleries.length) return;
 
-    var imageEl = overlay.querySelector('[data-lightbox-image]');
-    var videoEl = overlay.querySelector('[data-lightbox-video]');
-    var iframeEl = overlay.querySelector('[data-lightbox-iframe]');
+    var stage = overlay.querySelector('[data-lightbox-stage]');
     var closeBtn = overlay.querySelector('[data-lightbox-close]');
     var prevBtn = overlay.querySelector('[data-lightbox-prev]');
     var nextBtn = overlay.querySelector('[data-lightbox-next]');
 
+    var SLIDE_MS = 420;
+
     var items = [];
     var currentIndex = 0;
+    var currentSlide = null;
+    var isAnimating = false;
     var lastFocused = null;
 
     galleries.forEach(function (gallery) {
@@ -78,58 +83,67 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
         });
     });
 
-    function stopVideo() {
-        if (!videoEl.paused) videoEl.pause();
-        videoEl.removeAttribute('src');
-        videoEl.load();
-    }
+    // Buduje jeden "slajd" (kontener + odpowiedni element: img/video/iframe)
+    // dla danego materiału. autoplay dotyczy wyłącznie wideo otwieranego
+    // bezpośrednim kliknięciem w miniaturkę (nie przy nawigacji).
+    function buildSlide(data, autoplay) {
+        var slide = document.createElement('div');
+        slide.className = 'lightbox-slide';
 
-    function stopIframe() {
-        iframeEl.removeAttribute('src');
-    }
-
-    // autoplay: odtwórz automatycznie tylko przy bezpośrednim kliknięciu
-    // w miniaturkę — nie przy przełączaniu strzałkami (część przeglądarek
-    // blokuje wtedy dźwięk, bo to już nie jest bezpośrednia akcja użytkownika).
-    function render(autoplay) {
-        var current = items[currentIndex];
-
-        imageEl.hidden = true;
-        videoEl.hidden = true;
-        iframeEl.hidden = true;
-
-        if (current.type === 'video') {
-            imageEl.removeAttribute('src');
-            stopIframe();
-
-            videoEl.hidden = false;
-            videoEl.src = current.src;
-            videoEl.setAttribute('aria-label', current.label);
+        var media;
+        if (data.type === 'video') {
+            media = document.createElement('video');
+            media.className = 'lightbox-media';
+            media.src = data.src;
+            media.controls = true;
+            media.playsInline = true;
+            media.setAttribute('aria-label', data.label);
             if (autoplay) {
-                var playPromise = videoEl.play();
+                var playPromise = media.play();
                 if (playPromise && playPromise.catch) playPromise.catch(function () {});
             }
-        } else if (current.type === '360') {
-            stopVideo();
-            imageEl.removeAttribute('src');
-
-            iframeEl.hidden = false;
-            iframeEl.src = current.src;
-            iframeEl.setAttribute('title', current.label);
+        } else if (data.type === '360') {
+            media = document.createElement('iframe');
+            media.className = 'lightbox-media lightbox-frame';
+            media.src = data.src;
+            media.title = data.label;
+            media.setAttribute('allowfullscreen', '');
         } else {
-            stopVideo();
-            stopIframe();
-
-            imageEl.hidden = false;
-            imageEl.src = current.src;
-            imageEl.alt = current.label;
+            media = document.createElement('img');
+            media.className = 'lightbox-media';
+            media.src = data.src;
+            media.alt = data.label;
         }
+
+        slide.appendChild(media);
+        return slide;
+    }
+
+    // Zatrzymuje wideo/iframe zanim slajd zniknie z DOM — inaczej dźwięk/
+    // odtwarzanie leciałoby dalej w tle.
+    function destroySlide(slide) {
+        if (!slide) return;
+        var media = slide.firstElementChild;
+        if (media) {
+            if (media.tagName === 'VIDEO') {
+                media.pause();
+                media.removeAttribute('src');
+                media.load();
+            } else if (media.tagName === 'IFRAME') {
+                media.src = 'about:blank';
+            }
+        }
+        slide.remove();
     }
 
     function openLightbox(index) {
         currentIndex = index;
         lastFocused = document.activeElement;
-        render(true);
+
+        stage.innerHTML = '';
+        currentSlide = buildSlide(items[currentIndex], true);
+        stage.appendChild(currentSlide);
+
         overlay.hidden = false;
         document.body.style.overflow = 'hidden';
 
@@ -146,34 +160,44 @@ document.querySelectorAll('.gallery-item video').forEach(function (video) {
     function closeLightbox() {
         overlay.classList.remove('is-open');
         document.body.style.overflow = '';
-        stopVideo();
-        stopIframe();
         if (lastFocused) lastFocused.focus();
 
         window.setTimeout(function () {
             overlay.hidden = true;
+            destroySlide(currentSlide);
+            currentSlide = null;
+            stage.innerHTML = '';
         }, 320);
     }
 
-    // Zanikanie przy zmianie materiału (poprzedni/następny) — 280ms, tyle
-    // samo co przejście opacity zdefiniowane na .lightbox-media w CSS.
-    // Uwaga: element do wygaszenia trzeba ustalić PRZED zmianą currentIndex —
-    // inaczej (np. przy przejściu ze zdjęcia na film) wygaszony zostałby
-    // element, który wcale nie jest jeszcze widoczny.
+    // delta > 0: następny (wjeżdża z prawej, obecny wyjeżdża w lewo).
+    // delta < 0: poprzedni (wjeżdża z lewej, obecny wyjeżdża w prawo).
+    // Ten sam kierunek co przeciąganie palcem po ekranie.
     function navigate(delta) {
-        var currentType = items[currentIndex].type;
-        var activeEl = currentType === 'video' ? videoEl : (currentType === '360' ? iframeEl : imageEl);
-        stopVideo();
-        activeEl.classList.add('is-fading');
+        if (isAnimating || items.length < 2) return;
+        isAnimating = true;
 
-        currentIndex = (currentIndex + delta + items.length) % items.length;
+        var nextIndex = (currentIndex + delta + items.length) % items.length;
+        var outgoing = currentSlide;
+        var incoming = buildSlide(items[nextIndex], false);
+
+        incoming.classList.add(delta > 0 ? 'lightbox-slide--enter-from-right' : 'lightbox-slide--enter-from-left');
+        stage.appendChild(incoming);
+
+        // Wymuś przeliczenie stylów, zanim usuniemy klasę startową —
+        // inaczej przeglądarka scali oba stany w jeden i nic się nie przesunie.
+        void incoming.offsetWidth;
+        requestAnimationFrame(function () {
+            incoming.classList.remove('lightbox-slide--enter-from-right', 'lightbox-slide--enter-from-left');
+            outgoing.classList.add(delta > 0 ? 'lightbox-slide--exit-to-left' : 'lightbox-slide--exit-to-right');
+        });
 
         window.setTimeout(function () {
-            render(false);
-            imageEl.classList.remove('is-fading');
-            videoEl.classList.remove('is-fading');
-            iframeEl.classList.remove('is-fading');
-        }, 280);
+            destroySlide(outgoing);
+            currentSlide = incoming;
+            currentIndex = nextIndex;
+            isAnimating = false;
+        }, SLIDE_MS);
     }
 
     function showPrev() {
