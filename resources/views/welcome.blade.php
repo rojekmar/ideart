@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Portfolio') }} — Grafika 3D, 2D, animacja, film</title>
     <meta name="description" content="Grafika 3D i 2D, animacja, film, montaż, postprodukcja i fotografia. Tworzę obrazy, które przyciągają uwagę.">
+    <link rel="canonical" href="{{ url('/') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:site_name" content="{{ config('app.name', 'Portfolio') }}">
+    <meta property="og:title" content="{{ config('app.name', 'Portfolio') }} — Grafika 3D, 2D, animacja, film">
+    <meta property="og:description" content="Grafika 3D i 2D, animacja, film, montaż, postprodukcja i fotografia. Tworzę obrazy, które przyciągają uwagę.">
+    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

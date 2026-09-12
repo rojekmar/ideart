@@ -1,3 +1,13 @@
+@php
+    // Pierwsza "grafika" z galerii tej kategorii — używana jako tło hero
+    // (patrz sekcja INTRO niżej) i jako obraz w tagach Open Graph. Dla '360'
+    // bierzemy miniaturkę. Kategorie złożone wyłącznie z wideo (np. Animacja
+    // i Film) dostają zamiast zdjęcia pierwszą klatkę pierwszego filmu (dla
+    // hero — do Open Graph film się nie nadaje, tam zostaje logo jako fallback).
+    $heroBgItem = collect($media)->first(fn ($item) => in_array($item['type'], ['image', '360']));
+    $heroBgSrc = $heroBgItem ? ($heroBgItem['type'] === '360' ? $heroBgItem['thumb'] : $heroBgItem['src']) : null;
+    $heroBgVideo = $heroBgSrc ? null : collect($media)->first(fn ($item) => $item['type'] === 'video');
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -5,6 +15,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $category['title'] }} — {{ config('app.name', 'Portfolio') }}</title>
     <meta name="description" content="{{ $category['description'] }}">
+    <link rel="canonical" href="{{ route('portfolio.category', $category['slug']) }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ route('portfolio.category', $category['slug']) }}">
+    <meta property="og:site_name" content="{{ config('app.name', 'Portfolio') }}">
+    <meta property="og:title" content="{{ $category['title'] }} — {{ config('app.name', 'Portfolio') }}">
+    <meta property="og:description" content="{{ $category['description'] }}">
+    <meta property="og:image" content="{{ $heroBgSrc ?? asset('assets/images/logo.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -16,17 +34,7 @@
 
         {{-- ---------- INTRO ---------- --}}
         <section class="hero hero--category">
-            @php
-                // Pierwsza "grafika" z galerii tej kategorii jako tło — ten sam
-                // styl co suwak na stronie głównej, ale jedno statyczne zdjęcie
-                // (bez animacji cyklu). Dla '360' bierzemy miniaturkę. Kategorie
-                // złożone wyłącznie z wideo (np. Animacja i Film) dostają zamiast
-                // zdjęcia pierwszą klatkę pierwszego filmu (ten sam trik co przy
-                // miniaturkach wideo w galerii — patrz app.js).
-                $heroBgItem = collect($media)->first(fn ($item) => in_array($item['type'], ['image', '360']));
-                $heroBgSrc = $heroBgItem ? ($heroBgItem['type'] === '360' ? $heroBgItem['thumb'] : $heroBgItem['src']) : null;
-                $heroBgVideo = $heroBgSrc ? null : collect($media)->first(fn ($item) => $item['type'] === 'video');
-            @endphp
+            {{-- $heroBgSrc / $heroBgVideo policzone na górze pliku (patrz przed <head> — potrzebne też do Open Graph) --}}
             @if($heroBgSrc)
                 <div class="hero-slider" aria-hidden="true">
                     <img class="hero-slide hero-slide--static" src="{{ $heroBgSrc }}" alt="" loading="eager" fetchpriority="high">
