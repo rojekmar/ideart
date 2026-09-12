@@ -195,11 +195,14 @@ if (! function_exists('get_videos_from_dir')) {
 
 if (! function_exists('get_360_from_dir')) {
     /**
-     * Zwraca prezentacje 360° (własny viewer, plik .html) z podanego
-     * folderu — najnowsze pierwsze. Miniaturką każdej prezentacji jest
-     * plik graficzny o tej samej nazwie bazowej co plik .html
-     * (np. "hala.html" + "hala.jpg" obok siebie w tym samym folderze).
-     * Prezentacja bez pasującej miniatury jest pomijana.
+     * Zwraca prezentacje 360° z podanego folderu — każda prezentacja to
+     * PODFOLDER z gotowym eksportem wirtualnego spaceru (np. z Pano2VR):
+     * plik "index.html" (viewer) oraz miniatura ("preview"/"thumb"/
+     * "miniatura" + .jpg/.jpeg/.png/.webp) w katalogu głównym tego
+     * podfolderu, obok plików/folderów samego viewera (tiles/, media/,
+     * pano.xml itd.). Podfolder bez index.html albo bez rozpoznanej
+     * miniatury jest pomijany. Najnowsze (wg daty modyfikacji
+     * index.html) pierwsze.
      */
     function get_360_from_dir(string $dir): array
     {
@@ -209,35 +212,47 @@ if (! function_exists('get_360_from_dir')) {
             return [];
         }
 
-        $thumbExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
-
-        $htmlFiles = [];
-        foreach (scandir($full_path) as $file) {
-            if ($file === '.' || $file === '..') continue;
-            if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) !== 'html') continue;
-            $htmlFiles[$file] = filemtime($full_path . DIRECTORY_SEPARATOR . $file);
+        $thumbNames = [];
+        foreach (['preview', 'thumb', 'miniatura'] as $base) {
+            foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
+                $thumbNames[] = "{$base}.{$ext}";
+            }
         }
 
-        arsort($htmlFiles);
+        $projects = [];
+        foreach (scandir($full_path) as $entry) {
+            if ($entry === '.' || $entry === '..') continue;
 
-        $items = [];
-        foreach (array_keys($htmlFiles) as $file) {
-            $basename = pathinfo($file, PATHINFO_FILENAME);
-            $thumb = null;
+            $projectPath = $full_path . DIRECTORY_SEPARATOR . $entry;
+            if (! is_dir($projectPath)) continue;
 
-            foreach ($thumbExtensions as $ext) {
-                if (file_exists($full_path . DIRECTORY_SEPARATOR . $basename . '.' . $ext)) {
-                    $thumb = asset(rtrim($dir, '/') . '/' . $basename . '.' . $ext);
+            $indexFile = $projectPath . DIRECTORY_SEPARATOR . 'index.html';
+            if (! file_exists($indexFile)) continue;
+
+            $thumbFile = null;
+            foreach ($thumbNames as $name) {
+                if (file_exists($projectPath . DIRECTORY_SEPARATOR . $name)) {
+                    $thumbFile = $name;
                     break;
                 }
             }
 
-            if (! $thumb) continue;
+            if (! $thumbFile) continue;
 
+            $projects[$entry] = [
+                'mtime' => filemtime($indexFile),
+                'thumb' => $thumbFile,
+            ];
+        }
+
+        uasort($projects, fn (array $a, array $b) => $b['mtime'] <=> $a['mtime']);
+
+        $items = [];
+        foreach ($projects as $entry => $data) {
             $items[] = [
                 'type' => '360',
-                'src' => asset(rtrim($dir, '/') . '/' . $file),
-                'thumb' => $thumb,
+                'src' => asset(rtrim($dir, '/') . '/' . $entry . '/index.html'),
+                'thumb' => asset(rtrim($dir, '/') . '/' . $entry . '/' . $data['thumb']),
             ];
         }
 
