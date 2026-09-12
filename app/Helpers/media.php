@@ -72,6 +72,12 @@ if (! function_exists('portfolio_categories')) {
                 'description' => 'Animacje 3D i 2D, motion design oraz realizacja filmowa — od scenariusza i planu zdjęciowego po spoty, intra i loopy.',
             ],
             [
+                'slug' => '360-interaktywnie',
+                'title' => '360 Interaktywnie',
+                'three_sixty_dir' => 'assets/grafiki_animacje/360',
+                'description' => 'Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.',
+            ],
+            [
                 'slug' => 'fotografia',
                 'title' => 'Fotografia',
                 'description' => 'Sesje produktowe, wnętrzarskie i wizerunkowe wraz z retuszem i obróbką w wysokiej jakości.',
@@ -79,12 +85,6 @@ if (! function_exists('portfolio_categories')) {
                     ['title' => 'Fotografia produktowa', 'dir' => 'assets/grafiki_animacje/fotografia produktowa'],
                     ['title' => 'Fotografia - Sesje', 'dir' => 'assets/grafiki_animacje/fotografia sesje'],
                 ],
-            ],
-            [
-                'slug' => '360-interaktywnie',
-                'title' => '360 Interaktywnie',
-                'three_sixty_dir' => 'assets/grafiki_animacje/360',
-                'description' => 'Interaktywne prezentacje 360° — obracane wizualizacje i panoramy, które można samodzielnie eksplorować w przeglądarce.',
             ],
         ];
     }
