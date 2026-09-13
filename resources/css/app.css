@@ -442,17 +442,16 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* Te same narożniki "HUD", ale stałe (niski poziom) na większych panelach —
-   hero jak ramka celownika wokół sloganu, nagłówki sekcji, FAQ i formularz
-   kontaktowy — żeby motyw blueprint był widoczny w większej liczbie miejsc,
-   nie tylko na hoverze kart/galerii. */
+   hero jak ramka celownika wokół sloganu, FAQ i formularz kontaktowy —
+   żeby motyw blueprint był widoczny w większej liczbie miejsc, nie tylko
+   na hoverze kart/galerii. (Nagłówki sekcji (.section-head) świadomie
+   pominięte — na życzenie, bez ramki wokół tytułów sekcji.) */
 .hero .container,
-.section-head,
 .faq details,
 .contact-form {
     position: relative;
 }
 .hero .container::before,
-.section-head::before,
 .faq details::before,
 .contact-form::before {
     content: '';
