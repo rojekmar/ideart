@@ -41,6 +41,7 @@
     <meta property="og:image" content="{{ $heroBgSrc ?? asset('assets/images/logo.png') }}">
     <meta name="twitter:card" content="summary_large_image">
     <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    @include('partials.fonts')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

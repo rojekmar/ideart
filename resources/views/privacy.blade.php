@@ -9,6 +9,7 @@
     @if($altUrl = alternate_locale_url())
         <link rel="alternate" hreflang="{{ app()->getLocale() === 'en' ? 'pl' : 'en' }}" href="{{ $altUrl }}">
     @endif
+    @include('partials.fonts')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
