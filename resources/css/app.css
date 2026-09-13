@@ -18,7 +18,34 @@
     --gold-grad: linear-gradient(120deg, #a9821f 0%, #d4af37 45%, #f0dc9c 100%);
 
     --max: 1160px;
-    --radius: 16px;
+
+    /* ---------- Wariant "tech/blueprint" (gałąź design/tech-blueprint) ----------
+       Ostrzejsza geometria (mały promień zamiast zaokrąglonych kart) +
+       dwa dodatkowe kroje: geometryczny do nagłówków, monospace do
+       etykiet/liczb — efekt "danych"/konsoli zamiast czystego "premium".
+       Czcionki ładowane w partials/fonts.blade.php. */
+    --radius: 4px;
+    --font-display: "Sora", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+    /* Gotowy zestaw 8 gradientów rysujących narożniki "HUD" (jak ramka
+       kadrowania/celownik na rysunku technicznym) — jedna definicja
+       używana w kilku miejscach (karty, galeria, hero, FAQ, formularz),
+       żeby złożyć spójny motyw blueprint bez powielania kodu. */
+    --hud-corners:
+        linear-gradient(to right, var(--gold) 2px, transparent 2px),
+        linear-gradient(to bottom, var(--gold) 2px, transparent 2px),
+        linear-gradient(to left, var(--gold) 2px, transparent 2px),
+        linear-gradient(to bottom, var(--gold) 2px, transparent 2px),
+        linear-gradient(to right, var(--gold) 2px, transparent 2px),
+        linear-gradient(to top, var(--gold) 2px, transparent 2px),
+        linear-gradient(to left, var(--gold) 2px, transparent 2px),
+        linear-gradient(to top, var(--gold) 2px, transparent 2px);
+    --hud-corners-pos:
+        top left, top left,
+        top right, top right,
+        bottom left, bottom left,
+        bottom right, bottom right;
 }
 
 * { box-sizing: border-box; }
@@ -30,12 +57,19 @@ html { scroll-behavior: smooth; }
 
 body {
     margin: 0;
-    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    background: var(--bg);
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background:
+        /* jeden poziom siatki — bez grubszych linii co kilka pól */
+        linear-gradient(rgba(212, 175, 55, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.06) 1px, transparent 1px),
+        var(--bg);
+    background-size: 42px 42px, 42px 42px, auto;
     color: var(--text);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
 }
+
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
 
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
@@ -50,7 +84,7 @@ a { color: inherit; text-decoration: none; }
 .btn {
     display: inline-block;
     padding: 0.9rem 1.9rem;
-    border-radius: 6px;
+    border-radius: var(--radius);
     font-weight: 600;
     font-size: 0.98rem;
     color: #14100a;
@@ -241,8 +275,10 @@ a { color: inherit; text-decoration: none; }
     letter-spacing: 0.24em;
     font-size: 0.78rem;
     font-weight: 600;
+    font-family: var(--font-mono);
     color: var(--gold);
 }
+.eyebrow::before { content: '// '; opacity: 0.6; }
 .hero-title {
     margin: 0 auto 1.3rem;
     max-width: 900px;
@@ -324,7 +360,12 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- Sections ---------- */
 .section { padding: clamp(3.5rem, 9vw, 6.5rem) 0; }
-.section--alt { background: var(--bg-alt); }
+.section--alt {
+    /* Bez siatki (za dużo powtórzenia motywu) — za to mocniejsze,
+       ciemniejsze tło niż samo --bg-alt, żeby sekcja nadal była wyraźnie
+       odseparowana od reszty strony. */
+    background: linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)), var(--bg-alt);
+}
 
 .section-head {
     max-width: 640px;
@@ -377,12 +418,74 @@ a { color: inherit; text-decoration: none; }
 .card:hover::before {
     opacity: 1;
 }
+
+/* Narożniki "HUD" — pojawiają się na hover, jak celownik/wybór elementu
+   w interfejsie technicznym. Jedna warstwa tła złożona z 8 gradientów
+   (2 kreski × 4 rogi), więc działa na dowolnym elemencie bez dodatkowego
+   markupu w HTML. */
+.card::after,
+.gallery-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--hud-corners);
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: var(--hud-corners-pos);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.card:hover::after,
+.gallery-item:hover::after {
+    opacity: 1;
+}
+
+/* Te same narożniki "HUD", ale stałe (niski poziom) na większych panelach —
+   hero jak ramka celownika wokół sloganu, nagłówki sekcji, FAQ i formularz
+   kontaktowy — żeby motyw blueprint był widoczny w większej liczbie miejsc,
+   nie tylko na hoverze kart/galerii. */
+.hero .container,
+.section-head,
+.faq details,
+.contact-form {
+    position: relative;
+}
+.hero .container::before,
+.section-head::before,
+.faq details::before,
+.contact-form::before {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    pointer-events: none;
+    background-image: var(--hud-corners);
+    background-repeat: no-repeat;
+    background-size: 22px 22px;
+    background-position: var(--hud-corners-pos);
+    opacity: 0.35;
+    transition: opacity 0.25s ease;
+}
+.faq details::before,
+.contact-form::before {
+    inset: -1px;
+    background-size: 18px 18px;
+}
+.faq details:hover::before,
+.faq details[open]::before,
+.contact-form:focus-within::before {
+    opacity: 0.85;
+}
+
 .card-num {
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.1em;
+    font-family: var(--font-mono);
     color: var(--gold);
 }
+.card-num::before { content: '['; opacity: 0.6; }
+.card-num::after { content: ']'; opacity: 0.6; }
 .card h3 { margin: 0.6rem 0 0.5rem; font-size: 1.22rem; }
 .card p { margin: 0; color: var(--text-dim); font-size: 0.98rem; }
 
@@ -405,9 +508,9 @@ a { color: inherit; text-decoration: none; }
     padding: 1.2rem;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--radius);
 }
-.facts strong { display: block; font-size: 1.35rem; color: var(--gold-soft); }
+.facts strong { display: block; font-size: 1.35rem; font-family: var(--font-mono); color: var(--gold-soft); }
 .facts span { color: var(--text-dim); font-size: 0.9rem; }
 
 /* ---------- Reasons ---------- */
@@ -438,8 +541,11 @@ a { color: inherit; text-decoration: none; }
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.1em;
+    font-family: var(--font-mono);
     color: var(--gold);
 }
+.portfolio-group-num::before { content: '['; opacity: 0.6; }
+.portfolio-group-num::after { content: ']'; opacity: 0.6; }
 .portfolio-group-title {
     margin: 0;
     font-size: 1.3rem;
@@ -476,7 +582,7 @@ a { color: inherit; text-decoration: none; }
     position: relative;
     margin: 0;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: var(--radius);
     border: 1px solid var(--border);
     background: var(--surface);
 }
@@ -654,7 +760,7 @@ button.gallery-item:focus-visible {
     max-height: 100%;
     width: auto;
     height: auto;
-    border-radius: 10px;
+    border-radius: var(--radius);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
@@ -734,6 +840,7 @@ button.gallery-item:focus-visible {
     display: block;
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 700;
+    font-family: var(--font-mono);
     background: var(--gold-grad);
     -webkit-background-clip: text;
     background-clip: text;
@@ -751,7 +858,7 @@ button.gallery-item:focus-visible {
 .faq details {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius);
     padding: 0 1.3rem;
 }
 .faq summary {
@@ -823,7 +930,7 @@ button.gallery-item:focus-visible {
     padding: 0.75rem 0.9rem;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius);
     color: var(--text);
     font: inherit;
 }
@@ -858,7 +965,7 @@ button.gallery-item:focus-visible {
 .form-alert {
     margin: 0;
     padding: 0.9rem 1.1rem;
-    border-radius: 10px;
+    border-radius: var(--radius);
     font-size: 0.9rem;
 }
 .form-alert--success {
