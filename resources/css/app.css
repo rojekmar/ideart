@@ -364,13 +364,10 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Sections ---------- */
 .section { padding: clamp(3.5rem, 9vw, 6.5rem) 0; }
 .section--alt {
-    background:
-        linear-gradient(rgba(212, 175, 55, 0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(212, 175, 55, 0.12) 1px, transparent 1px),
-        linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-        var(--bg-alt);
-    background-size: 168px 168px, 168px 168px, 42px 42px, 42px 42px, auto;
+    /* Bez siatki (za dużo powtórzenia motywu) — za to mocniejsze,
+       ciemniejsze tło niż samo --bg-alt, żeby sekcja nadal była wyraźnie
+       odseparowana od reszty strony. */
+    background: linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)), var(--bg-alt);
 }
 
 .section-head {
