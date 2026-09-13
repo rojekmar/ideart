@@ -93,6 +93,7 @@ Ustawienia repo → **Settings → Secrets and variables → Actions → Secrets
 | `FTP_PASSWORD` | hasło do tego konta FTP |
 | `APP_KEY` | `base64:75EaBiUFxqMqxvD1Jg4Y8nK9Ye8wFrNwVtM9TAhiRN0=` |
 | `MAIL_PASSWORD` | hasło aplikacji Gmail dla `rojekmar@gmail.com` (używane przez formularz kontaktowy do wysyłki e-mail przez SMTP) |
+| `GOOGLE_ANALYTICS_ID` | *(opcjonalny)* identyfikator pomiaru Google Analytics, np. `G-XXXXXXXXXX`. Dopóki nie jest ustawiony, baner cookies i skrypt Analytics w ogóle się nie pojawiają na stronie (patrz `config/services.php` i `partials/cookie-banner.blade.php`) — nic się nie psuje bez niego. |
 
 **Uwaga przy dodawaniu sekretów:** jeśli po zapisaniu sekret pokazuje się
 na liście, ale w logu GitHub Actions wychodzi jako pusty — sprawdź, czy

@@ -1,5 +1,72 @@
 import './bootstrap';
 
+// Zgoda na cookies + Google Analytics — skrypt Analytics ładowany dopiero
+// po kliknięciu "Akceptuję" (albo od razu, jeśli zgoda była już zapisana
+// wcześniej), nigdy automatycznie. window.__gaId ustawiane inline w
+// partials/cookie-banner.blade.php — jeśli go nie ma (Analytics jeszcze
+// nieskonfigurowany), cały ten blok jest nieaktywny (brak banera w DOM).
+(function () {
+    var CONSENT_KEY = 'ideart-cookie-consent';
+    var banner = document.querySelector('[data-cookie-banner]');
+
+    function loadAnalytics() {
+        if (!window.__gaId || window.__gaLoaded) return;
+        window.__gaLoaded = true;
+
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.__gaId;
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', window.__gaId, { anonymize_ip: true });
+    }
+
+    function getConsent() {
+        try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; }
+    }
+    function setConsent(value) {
+        try { localStorage.setItem(CONSENT_KEY, value); } catch (e) {}
+    }
+
+    var consent = getConsent();
+    if (consent === 'accepted') {
+        loadAnalytics();
+    } else if (!consent && banner) {
+        banner.hidden = false;
+    }
+
+    if (banner) {
+        var acceptBtn = banner.querySelector('[data-cookie-accept]');
+        var rejectBtn = banner.querySelector('[data-cookie-reject]');
+
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', function () {
+                setConsent('accepted');
+                banner.hidden = true;
+                loadAnalytics();
+            });
+        }
+        if (rejectBtn) {
+            rejectBtn.addEventListener('click', function () {
+                setConsent('rejected');
+                banner.hidden = true;
+            });
+        }
+    }
+
+    // "Ustawienia cookies" w stopce — pozwala ponownie otworzyć baner, żeby
+    // zmienić wcześniejszy wybór.
+    document.querySelectorAll('[data-cookie-settings]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (banner) banner.hidden = false;
+        });
+    });
+})();
+
 // Zamknij menu mobilne po kliknięciu w link
 document.querySelectorAll('.site-nav a').forEach(function (link) {
     link.addEventListener('click', function () {

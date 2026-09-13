@@ -66,6 +66,7 @@ jobs:
             echo "MAIL_FROM_ADDRESS=rojekmar@gmail.com"
             echo "MAIL_FROM_NAME=\"IDEART\""
             echo "MAIL_CONTACT_TO=rojekmar@gmail.com"
+            echo "GOOGLE_ANALYTICS_ID=${{ secrets.GOOGLE_ANALYTICS_ID }}"
           } > .env
 
       - name: Zbuduj strukturę pod hosting bez SSH

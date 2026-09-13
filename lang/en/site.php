@@ -149,11 +149,45 @@ return [
     'footer' => [
         'tagline' => '3D and 2D graphics, animation, film and photography.',
         'copy' => 'all rights reserved.',
+        'privacy_link' => 'Privacy Policy',
+        'cookie_settings' => 'Cookie settings',
     ],
 
     'lang_switch' => [
         'label' => 'PL',
         'aria' => 'Switch to Polish',
+    ],
+
+    'cookies' => [
+        'text' => 'This site uses essential cookies to work properly. With your consent, we also use analytics cookies (Google Analytics) to understand what works and what could be improved.',
+        'link' => 'Learn more',
+        'accept' => 'Accept',
+        'reject' => 'Decline',
+    ],
+
+    'privacy' => [
+        'title' => 'Privacy Policy',
+        'updated' => 'Last updated: September 2026',
+        'intro' => 'This privacy policy explains what data is collected when you use ideart.com.pl, for what purpose, and what rights you have regarding that data.',
+        'controller_title' => 'Data controller',
+        'controller_text' => 'The data controller is Marcin Rojek, trading as IDEART. For privacy-related inquiries, contact: rojekmar@gmail.com.',
+        'data_title' => 'What data we collect and why',
+        'data_text' => 'The contact form collects: your name, email address, optionally a phone number, and your message. This data is used solely to respond to your inquiry and prepare a project quote. Providing this data is voluntary but necessary for us to reply.',
+        'basis_title' => 'Legal basis for processing',
+        'basis_text' => 'Data is processed under GDPR Article 6(1)(b) (steps taken at your request prior to entering into a contract) and Article 6(1)(f) (the controller\'s legitimate interest in responding to inquiries).',
+        'recipients_title' => 'Recipients of your data',
+        'recipients_text' => "Messages from the contact form are delivered to the controller's email inbox (Gmail/Google) — in this respect, Google LLC acts as the email infrastructure provider. Your data is not shared with other parties or used for marketing purposes without separate consent.",
+        'retention_title' => 'Data retention period',
+        'retention_text' => 'Message data is kept only as long as necessary to handle your inquiry or an agreed collaboration, and is then deleted.',
+        'rights_title' => 'Your rights',
+        'rights_text' => 'You have the right to access, rectify, erase, restrict the processing of, and port your data, as well as to object to its processing. You also have the right to lodge a complaint with the Polish Data Protection Authority (UODO) if you believe the processing violates GDPR.',
+        'cookies_title' => 'Cookies',
+        'cookies_necessary_title' => 'Essential',
+        'cookies_necessary_text' => 'The site uses session cookies required for the contact form to work correctly (CSRF protection, showing the confirmation message after sending). These cookies do not require consent and are always active.',
+        'cookies_analytics_title' => 'Analytics',
+        'cookies_analytics_text' => 'With your consent, the site may use Google Analytics for anonymous traffic analysis (visit counts, popular pages). You can give or withdraw consent at any time via the cookie banner ("Cookie settings" link in the footer) or your browser settings. Learn more about how Google processes data in Google\'s privacy policy.',
+        'changes_title' => 'Changes to this policy',
+        'changes_text' => 'This policy may be updated from time to time. The current version is always available at this address.',
     ],
 
 ];

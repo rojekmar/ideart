@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'google_analytics' => [
+        // Puste dopóki nie podasz identyfikatora (G-XXXXXXXXXX) — bez niego
+        // baner cookies i skrypt Analytics w ogóle się nie renderują (patrz
+        // partials/cookie-banner.blade.php), więc nic się nie psuje, dopóki
+        // to nie jest skonfigurowane.
+        'id' => env('GOOGLE_ANALYTICS_ID'),
+    ],
+
 ];

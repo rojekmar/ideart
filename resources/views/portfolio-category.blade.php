@@ -131,6 +131,7 @@
     </main>
 
     @include('partials.footer')
+    @include('partials.cookie-banner')
 
 </body>
 </html>

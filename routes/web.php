@@ -25,6 +25,10 @@ $categoryAction = function (string $slug) {
     ]);
 };
 
+$privacyAction = function () {
+    return view('privacy');
+};
+
 // ---------- Wersja polska (domyślna, bez prefiksu) ----------
 // Locale ustawiane jawnie (nie polegamy na APP_LOCALE z .env) — lokalny
 // XAMPP i produkcja mają tam różne wartości, więc to jedyny pewny sposób,
@@ -45,8 +49,14 @@ Route::get('/portfolio/{slug}', function (string $slug) use ($categoryAction) {
     return $categoryAction($slug);
 })->name('portfolio.category');
 
+Route::get('/polityka-prywatnosci', function () use ($privacyAction) {
+    app()->setLocale('pl');
+
+    return $privacyAction();
+})->name('privacy');
+
 // ---------- Wersja angielska (prefiks /en) ----------
-Route::prefix('en')->name('en.')->group(function () use ($homeAction, $categoryAction) {
+Route::prefix('en')->name('en.')->group(function () use ($homeAction, $categoryAction, $privacyAction) {
     Route::get('/', function () use ($homeAction) {
         app()->setLocale('en');
 
@@ -62,6 +72,12 @@ Route::prefix('en')->name('en.')->group(function () use ($homeAction, $categoryA
 
         return $categoryAction($slug);
     })->name('portfolio.category');
+
+    Route::get('/privacy-policy', function () use ($privacyAction) {
+        app()->setLocale('en');
+
+        return $privacyAction();
+    })->name('privacy');
 });
 
 // Przekierowania 301 ze starych adresów poprzedniej wersji strony —

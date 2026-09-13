@@ -149,11 +149,45 @@ return [
     'footer' => [
         'tagline' => 'Grafika 3D i 2D, animacja, film i fotografia.',
         'copy' => 'wszystkie prawa zastrzeżone.',
+        'privacy_link' => 'Polityka prywatności',
+        'cookie_settings' => 'Ustawienia cookies',
     ],
 
     'lang_switch' => [
         'label' => 'EN',
         'aria' => 'Przełącz na angielski',
+    ],
+
+    'cookies' => [
+        'text' => 'Ta strona używa niezbędnych plików cookie do prawidłowego działania. Za Twoją zgodą używamy też plików cookie analitycznych (Google Analytics), żeby wiedzieć, co działa, a co warto poprawić.',
+        'link' => 'Dowiedz się więcej',
+        'accept' => 'Akceptuję',
+        'reject' => 'Odrzuć',
+    ],
+
+    'privacy' => [
+        'title' => 'Polityka prywatności',
+        'updated' => 'Ostatnia aktualizacja: wrzesień 2026',
+        'intro' => 'Niniejsza polityka prywatności wyjaśnia, jakie dane są zbierane podczas korzystania ze strony ideart.com.pl, w jakim celu, oraz jakie prawa przysługują osobom, których dane dotyczą.',
+        'controller_title' => 'Administrator danych',
+        'controller_text' => 'Administratorem danych osobowych jest Marcin Rojek, prowadzący działalność pod marką IDEART. Kontakt w sprawach ochrony danych: rojekmar@gmail.com.',
+        'data_title' => 'Jakie dane zbieramy i w jakim celu',
+        'data_text' => 'Poprzez formularz kontaktowy zbierane są: imię, adres e-mail, opcjonalnie numer telefonu oraz treść wiadomości. Dane te są wykorzystywane wyłącznie w celu odpowiedzi na zapytanie i przygotowania wyceny projektu. Podanie danych jest dobrowolne, ale niezbędne do udzielenia odpowiedzi.',
+        'basis_title' => 'Podstawa prawna przetwarzania',
+        'basis_text' => 'Dane przetwarzane są na podstawie art. 6 ust. 1 lit. b) RODO (działania podejmowane przed zawarciem umowy, na żądanie osoby, której dane dotyczą) oraz lit. f) (prawnie uzasadniony interes administratora, jakim jest udzielanie odpowiedzi na zapytania).',
+        'recipients_title' => 'Odbiorcy danych',
+        'recipients_text' => 'Wiadomości z formularza kontaktowego trafiają na skrzynkę e-mail administratora (Gmail/Google) — w tym zakresie Google LLC działa jako dostawca infrastruktury pocztowej. Dane nie są przekazywane innym podmiotom ani wykorzystywane do celów marketingowych bez odrębnej zgody.',
+        'retention_title' => 'Okres przechowywania danych',
+        'retention_text' => 'Dane z wiadomości przechowywane są tak długo, jak jest to niezbędne do obsługi zapytania lub realizacji ustalonej współpracy, a następnie usuwane.',
+        'rights_title' => 'Twoje prawa',
+        'rights_text' => 'Przysługuje Ci prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia oraz wniesienia sprzeciwu wobec przetwarzania. Przysługuje Ci również prawo wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (UODO), jeśli uznasz, że przetwarzanie narusza przepisy RODO.',
+        'cookies_title' => 'Pliki cookie',
+        'cookies_necessary_title' => 'Niezbędne',
+        'cookies_necessary_text' => 'Strona używa ciasteczek sesyjnych, niezbędnych do prawidłowego działania formularza kontaktowego (ochrona przed atakami CSRF, wyświetlenie komunikatu o wysłaniu wiadomości). Te ciasteczka nie wymagają zgody i są zawsze aktywne.',
+        'cookies_analytics_title' => 'Analityczne',
+        'cookies_analytics_text' => 'Za Twoją zgodą strona może korzystać z Google Analytics do anonimowej analizy ruchu (liczba odwiedzin, popularne podstrony). Zgodę możesz wyrazić lub wycofać w dowolnym momencie w banerze cookies (link "Ustawienia cookies" w stopce) lub w ustawieniach przeglądarki. Więcej o tym, jak Google przetwarza dane, znajdziesz w polityce prywatności Google.',
+        'changes_title' => 'Zmiany polityki',
+        'changes_text' => 'Niniejsza polityka może być okresowo aktualizowana. Aktualna wersja jest zawsze dostępna pod tym adresem.',
     ],
 
 ];
