@@ -27,6 +27,25 @@
     --radius: 4px;
     --font-display: "Sora", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-mono: "Anonymous Pro", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+    /* Gotowy zestaw 8 gradientów rysujących narożniki "HUD" (jak ramka
+       kadrowania/celownik na rysunku technicznym) — jedna definicja
+       używana w kilku miejscach (karty, galeria, hero, FAQ, formularz),
+       żeby złożyć spójny motyw blueprint bez powielania kodu. */
+    --hud-corners:
+        linear-gradient(to right, var(--gold) 2px, transparent 2px),
+        linear-gradient(to bottom, var(--gold) 2px, transparent 2px),
+        linear-gradient(to left, var(--gold) 2px, transparent 2px),
+        linear-gradient(to bottom, var(--gold) 2px, transparent 2px),
+        linear-gradient(to right, var(--gold) 2px, transparent 2px),
+        linear-gradient(to top, var(--gold) 2px, transparent 2px),
+        linear-gradient(to left, var(--gold) 2px, transparent 2px),
+        linear-gradient(to top, var(--gold) 2px, transparent 2px);
+    --hud-corners-pos:
+        top left, top left,
+        top right, top right,
+        bottom left, bottom left,
+        bottom right, bottom right;
 }
 
 * { box-sizing: border-box; }
@@ -40,10 +59,14 @@ body {
     margin: 0;
     font-family: "Anonymous Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     background:
-        linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+        /* gruba siatka co 4 pola — jak arkusz papieru milimetrowego */
+        linear-gradient(rgba(212, 175, 55, 0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.14) 1px, transparent 1px),
+        /* cienka siatka pomocnicza */
+        linear-gradient(rgba(212, 175, 55, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.06) 1px, transparent 1px),
         var(--bg);
-    background-size: 42px 42px, 42px 42px, auto;
+    background-size: 168px 168px, 168px 168px, 42px 42px, 42px 42px, auto;
     color: var(--text);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
@@ -340,7 +363,15 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- Sections ---------- */
 .section { padding: clamp(3.5rem, 9vw, 6.5rem) 0; }
-.section--alt { background: var(--bg-alt); }
+.section--alt {
+    background:
+        linear-gradient(rgba(212, 175, 55, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.12) 1px, transparent 1px),
+        linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+        var(--bg-alt);
+    background-size: 168px 168px, 168px 168px, 42px 42px, 42px 42px, auto;
+}
 
 .section-head {
     max-width: 640px;
@@ -404,28 +435,52 @@ a { color: inherit; text-decoration: none; }
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image:
-        linear-gradient(to right, var(--gold) 2px, transparent 2px),
-        linear-gradient(to bottom, var(--gold) 2px, transparent 2px),
-        linear-gradient(to left, var(--gold) 2px, transparent 2px),
-        linear-gradient(to bottom, var(--gold) 2px, transparent 2px),
-        linear-gradient(to right, var(--gold) 2px, transparent 2px),
-        linear-gradient(to top, var(--gold) 2px, transparent 2px),
-        linear-gradient(to left, var(--gold) 2px, transparent 2px),
-        linear-gradient(to top, var(--gold) 2px, transparent 2px);
+    background-image: var(--hud-corners);
     background-repeat: no-repeat;
     background-size: 16px 16px;
-    background-position:
-        top left, top left,
-        top right, top right,
-        bottom left, bottom left,
-        bottom right, bottom right;
+    background-position: var(--hud-corners-pos);
     opacity: 0;
     transition: opacity 0.25s ease;
 }
 .card:hover::after,
 .gallery-item:hover::after {
     opacity: 1;
+}
+
+/* Te same narożniki "HUD", ale stałe (niski poziom) na większych panelach —
+   hero jak ramka celownika wokół sloganu, nagłówki sekcji, FAQ i formularz
+   kontaktowy — żeby motyw blueprint był widoczny w większej liczbie miejsc,
+   nie tylko na hoverze kart/galerii. */
+.hero .container,
+.section-head,
+.faq details,
+.contact-form {
+    position: relative;
+}
+.hero .container::before,
+.section-head::before,
+.faq details::before,
+.contact-form::before {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    pointer-events: none;
+    background-image: var(--hud-corners);
+    background-repeat: no-repeat;
+    background-size: 22px 22px;
+    background-position: var(--hud-corners-pos);
+    opacity: 0.35;
+    transition: opacity 0.25s ease;
+}
+.faq details::before,
+.contact-form::before {
+    inset: -1px;
+    background-size: 18px 18px;
+}
+.faq details:hover::before,
+.faq details[open]::before,
+.contact-form:focus-within::before {
+    opacity: 0.85;
 }
 
 .card-num {
