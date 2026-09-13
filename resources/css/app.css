@@ -26,7 +26,7 @@
        Czcionki ładowane w partials/fonts.blade.php. */
     --radius: 4px;
     --font-display: "Sora", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-mono: "Anonymous Pro", ui-monospace, "Cascadia Code", Consolas, monospace;
+    --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
 
     /* Gotowy zestaw 8 gradientów rysujących narożniki "HUD" (jak ramka
        kadrowania/celownik na rysunku technicznym) — jedna definicja
@@ -57,7 +57,7 @@ html { scroll-behavior: smooth; }
 
 body {
     margin: 0;
-    font-family: "Anonymous Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     background:
         /* gruba siatka co 4 pola — jak arkusz papieru milimetrowego */
         linear-gradient(rgba(212, 175, 55, 0.14) 1px, transparent 1px),
