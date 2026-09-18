@@ -325,3 +325,115 @@ document.querySelectorAll('.gallery-item video, video.hero-slide').forEach(funct
         if (e.key === 'ArrowRight') showNext();
     });
 })();
+
+// Sieć "neuronów" w tle — particle/constellation effect na canvasie
+// (.particle-network, patrz partials/particle-network.blade.php). Punkty
+// dryfują powoli i łączą się liniami, gdy są blisko siebie; te w pobliżu
+// kursora łączą się dodatkowo z nim. Wyłączone przy prefers-reduced-motion.
+(function () {
+    var canvas = document.querySelector('.particle-network');
+    if (!canvas || !canvas.getContext) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var ctx = canvas.getContext('2d');
+    var GOLD = '212, 175, 55';
+    var LINK_DIST = 130;
+    var MOUSE_DIST = 170;
+
+    var width = 0;
+    var height = 0;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var particles = [];
+    var mouse = { x: null, y: null };
+
+    function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        var count = Math.min(80, Math.round((width * height) / 16000));
+        particles = [];
+        for (var i = 0; i < count; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+            });
+        }
+    }
+
+    function step() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Ruch i punkty
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > width) p.vx *= -1;
+            if (p.y < 0 || p.y > height) p.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 1.6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + GOLD + ', 0.5)';
+            ctx.fill();
+        }
+
+        // Linie między bliskimi punktami
+        for (var i = 0; i < particles.length; i++) {
+            for (var j = i + 1; j < particles.length; j++) {
+                var a = particles[i];
+                var b = particles[j];
+                var dx = a.x - b.x;
+                var dy = a.y - b.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < LINK_DIST) {
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.strokeStyle = 'rgba(' + GOLD + ', ' + (0.16 * (1 - dist / LINK_DIST)) + ')';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Linie od kursora do pobliskich punktów
+        if (mouse.x !== null) {
+            for (var i = 0; i < particles.length; i++) {
+                var p = particles[i];
+                var dx = p.x - mouse.x;
+                var dy = p.y - mouse.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < MOUSE_DIST) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.strokeStyle = 'rgba(' + GOLD + ', ' + (0.35 * (1 - dist / MOUSE_DIST)) + ')';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', function (e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseleave', function () {
+        mouse.x = null;
+        mouse.y = null;
+    });
+
+    resize();
+    requestAnimationFrame(step);
+})();

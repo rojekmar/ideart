@@ -14,6 +14,7 @@
 </head>
 <body>
 
+    @include('partials.particle-network')
     @include('partials.cursor-glow')
     @include('partials.header')
 
