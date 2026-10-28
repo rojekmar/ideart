@@ -20,8 +20,8 @@ return [
 
     'hero' => [
         'eyebrow' => 'Full-service multimedia studio',
-        'title' => 'Images that work for your success. Complete 3D graphics, 2D and photography in one place.',
-        'lead' => "Instead of hiring a 3D artist, an editor, a photographer and an agency separately, hand me the whole project. Over 20 years of experience, zero middlemen, and guaranteed visual consistency.",
+        'title' => 'Your personal creative department, in one person.',
+        'lead' => "3D graphics, 2D, animation, photography and 360° solutions. You save time on coordination and gain a partner who understands your project at every stage — from concept to publication-ready files.",
         'cta_primary' => 'Get a quote',
         'cta_secondary' => 'See my work',
         'trust_1' => '⚡ Direct contact',

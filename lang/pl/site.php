@@ -20,8 +20,8 @@ return [
 
     'hero' => [
         'eyebrow' => 'Kompleksowe studio multimedialne',
-        'title' => 'Obrazy, które pracują na Twój sukces. Kompleksowa grafika 3D, 2D i fotografia w jednym miejscu.',
-        'lead' => 'Zamiast szukać osobno grafika 3D, montażysty, fotografa i agencji reklamowej, powierz mi projekt w całości. Ponad 20 lat doświadczenia, zero pośredników i gwarancja spójności wizualnej.',
+        'title' => 'Twój osobisty departament kreatywny w jednej osobie.',
+        'lead' => 'Grafika 3D, 2D, animacja, fotografia i rozwiązania 360°. Oszczędzasz czas na koordynacji i zyskujesz partnera, który rozumie Twój projekt na każdym etapie – od koncepcji po pliki gotowe do publikacji.',
         'cta_primary' => 'Wyceń swój projekt',
         'cta_secondary' => 'Zobacz realizacje',
         'trust_1' => '⚡ Bezpośredni kontakt',
