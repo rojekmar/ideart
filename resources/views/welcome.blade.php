@@ -97,8 +97,48 @@
                     {{ __('site.hero.lead') }}
                 </p>
                 <div class="hero-actions">
-                    <a href="#portfolio" class="btn">{{ __('site.hero.cta_primary') }}</a>
-                    <a href="#oferta" class="btn btn--ghost">{{ __('site.hero.cta_secondary') }}</a>
+                    <a href="#kontakt" class="btn">{{ __('site.hero.cta_primary') }}</a>
+                    <a href="#portfolio" class="btn btn--ghost">{{ __('site.hero.cta_secondary') }}</a>
+                </div>
+                <ul class="trust-bar">
+                    <li>{{ __('site.hero.trust_1') }}</li>
+                    <li>{{ __('site.hero.trust_2') }}</li>
+                    <li>{{ __('site.hero.trust_3') }}</li>
+                    <li>{{ __('site.hero.trust_4') }}</li>
+                </ul>
+            </div>
+        </section>
+
+        {{-- ---------- PAKIETY ---------- --}}
+        <section id="pakiety" class="section">
+            <div class="container">
+                <header class="section-head">
+                    <p class="eyebrow">{{ __('site.packages.eyebrow') }}</p>
+                    <h2 class="section-title">{{ __('site.packages.title') }}</h2>
+                    <p class="section-text">{{ __('site.packages.lead') }}</p>
+                </header>
+
+                <div class="packages">
+                    <div class="card">
+                        <h3>{{ __('site.packages.package_1_title') }}</h3>
+                        <p>{{ __('site.packages.package_1_text') }}</p>
+                        <span class="package-tags">{{ __('site.packages.package_1_tags') }}</span>
+                    </div>
+                    <div class="card">
+                        <h3>{{ __('site.packages.package_2_title') }}</h3>
+                        <p>{{ __('site.packages.package_2_text') }}</p>
+                        <span class="package-tags">{{ __('site.packages.package_2_tags') }}</span>
+                    </div>
+                    <div class="card">
+                        <h3>{{ __('site.packages.package_3_title') }}</h3>
+                        <p>{{ __('site.packages.package_3_text') }}</p>
+                        <span class="package-tags">{{ __('site.packages.package_3_tags') }}</span>
+                    </div>
+                    <div class="card">
+                        <h3>{{ __('site.packages.package_4_title') }}</h3>
+                        <p>{{ __('site.packages.package_4_text') }}</p>
+                        <span class="package-tags">{{ __('site.packages.package_4_tags') }}</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -156,6 +196,20 @@
                     <p class="section-text">
                         {{ __('site.about.text_2') }}
                     </p>
+                    <div class="benefits">
+                        <div class="reason">
+                            <h3>{{ __('site.about.benefit_1_title') }}</h3>
+                            <p>{{ __('site.about.benefit_1_text') }}</p>
+                        </div>
+                        <div class="reason">
+                            <h3>{{ __('site.about.benefit_2_title') }}</h3>
+                            <p>{{ __('site.about.benefit_2_text') }}</p>
+                        </div>
+                        <div class="reason">
+                            <h3>{{ __('site.about.benefit_3_title') }}</h3>
+                            <p>{{ __('site.about.benefit_3_text') }}</p>
+                        </div>
+                    </div>
                 </div>
                 <ul class="facts">
                     <li><strong>{{ __('site.about.fact_1_num') }}</strong><span>{{ __('site.about.fact_1_text') }}</span></li>
@@ -163,34 +217,6 @@
                     <li><strong>{{ __('site.about.fact_3_num') }}</strong><span>{{ __('site.about.fact_3_text') }}</span></li>
                     <li><strong>{{ __('site.about.fact_4_num') }}</strong><span>{{ __('site.about.fact_4_text') }}</span></li>
                 </ul>
-            </div>
-        </section>
-
-        {{-- ---------- DLACZEGO ---------- --}}
-        <section class="section">
-            <div class="container">
-                <header class="section-head">
-                    <p class="eyebrow">{{ __('site.why.eyebrow') }}</p>
-                    <h2 class="section-title">{{ __('site.why.title') }}</h2>
-                </header>
-                <div class="reasons">
-                    <div class="reason">
-                        <h3>{{ __('site.why.reason_1_title') }}</h3>
-                        <p>{{ __('site.why.reason_1_text') }}</p>
-                    </div>
-                    <div class="reason">
-                        <h3>{{ __('site.why.reason_2_title') }}</h3>
-                        <p>{{ __('site.why.reason_2_text') }}</p>
-                    </div>
-                    <div class="reason">
-                        <h3>{{ __('site.why.reason_3_title') }}</h3>
-                        <p>{{ __('site.why.reason_3_text') }}</p>
-                    </div>
-                    <div class="reason">
-                        <h3>{{ __('site.why.reason_4_title') }}</h3>
-                        <p>{{ __('site.why.reason_4_text') }}</p>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -203,10 +229,27 @@
                     <p class="section-text">{{ __('site.portfolio_section.lead') }}</p>
                 </header>
 
+                <div class="process-box">
+                    <p class="process-box-title">{{ __('site.portfolio_section.process_title') }}</p>
+                    <ol class="process-steps">
+                        <li>{{ __('site.portfolio_section.process_step_1') }}</li>
+                        <li>{{ __('site.portfolio_section.process_step_2') }}</li>
+                        <li>{{ __('site.portfolio_section.process_step_3') }}</li>
+                        <li>{{ __('site.portfolio_section.process_step_4') }}</li>
+                    </ol>
+                </div>
+
+                <div class="portfolio-filters" data-portfolio-filters>
+                    <button type="button" class="category-pill is-active" data-filter="all">{{ __('site.portfolio_section.filter_all') }}</button>
+                    @foreach(portfolio_categories() as $group)
+                        <button type="button" class="category-pill" data-filter="{{ $group['slug'] }}">{{ $group['title'] }}</button>
+                    @endforeach
+                </div>
+
                 <div class="portfolio-groups">
                     @foreach(portfolio_categories() as $index => $group)
                         @php($media = portfolio_preview_media($group, 3))
-                        <div class="portfolio-group" id="portfolio-{{ $group['slug'] }}">
+                        <div class="portfolio-group" id="portfolio-{{ $group['slug'] }}" data-portfolio-group="{{ $group['slug'] }}">
                             <div class="portfolio-group-head">
                                 <span class="portfolio-group-num">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
                                 <h3 class="portfolio-group-title">{{ $group['title'] }}</h3>
@@ -262,7 +305,7 @@
                     <h2 class="section-title">{{ __('site.faq.title') }}</h2>
                 </header>
                 <div class="faq">
-                    @for($i = 1; $i <= 6; $i++)
+                    @for($i = 1; $i <= 8; $i++)
                         <details>
                             <summary>{{ __('site.faq.q'.$i) }}</summary>
                             <p>{{ __('site.faq.a'.$i) }}</p>
@@ -317,13 +360,15 @@
                     <label>{{ __('site.contact.field_phone') }}
                         <input type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel">
                     </label>
-                    <label>{{ __('site.contact.field_type') }}
-                        <select name="type">
-                            @foreach(__('site.contact.type_options') as $option)
-                                <option @selected(old('type') === $option)>{{ $option }}</option>
-                            @endforeach
-                        </select>
-                    </label>
+                    <fieldset class="contact-checkboxes">
+                        <legend>{{ __('site.contact.field_type') }}</legend>
+                        @foreach(__('site.contact.type_options') as $option)
+                            <label class="contact-checkbox">
+                                <input type="checkbox" name="type[]" value="{{ $option }}" @checked(in_array($option, old('type', [])))>
+                                {{ $option }}
+                            </label>
+                        @endforeach
+                    </fieldset>
                     <label>{{ __('site.contact.field_message') }}
                         <textarea name="message" rows="4" required>{{ old('message') }}</textarea>
                     </label>

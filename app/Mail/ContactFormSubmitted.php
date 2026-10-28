@@ -13,7 +13,7 @@ class ContactFormSubmitted extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param array{name: string, email: string, phone: ?string, type: string, message: string} $data
+     * @param array{name: string, email: string, phone: ?string, type: array<int, string>, message: string} $data
      */
     public function __construct(public array $data)
     {
@@ -22,7 +22,7 @@ class ContactFormSubmitted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nowe zapytanie ze strony — '.$this->data['type'],
+            subject: 'Nowe zapytanie ze strony — '.implode(', ', $this->data['type']),
             replyTo: [$this->data['email']],
         );
     }

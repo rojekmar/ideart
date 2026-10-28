@@ -24,7 +24,7 @@
         @endif
         <tr>
             <td><strong>Rodzaj projektu</strong></td>
-            <td>{{ $data['type'] }}</td>
+            <td>{{ implode(', ', $data['type']) }}</td>
         </tr>
     </table>
 

@@ -14,12 +14,14 @@ return [
         'numeric' => 'The :attribute field may not be greater than :max.',
     ],
     'prohibited' => 'The :attribute field is not allowed.',
+    'array' => 'The :attribute field must be a list of values.',
 
     'attributes' => [
         'name' => 'name',
         'email' => 'email',
         'phone' => 'phone',
         'type' => 'project type',
+        'type.*' => 'project type',
         'message' => 'message',
         'website' => 'website',
     ],

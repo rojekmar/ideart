@@ -75,6 +75,25 @@ document.querySelectorAll('.site-nav a').forEach(function (link) {
     });
 });
 
+// Filtry kategorii w sekcji Portfolio na stronie głównej — przełączają
+// widoczność grup realizacji (bez przeładowania strony).
+var portfolioFilterButtons = document.querySelectorAll('[data-portfolio-filters] [data-filter]');
+var portfolioFilterGroups = document.querySelectorAll('[data-portfolio-group]');
+if (portfolioFilterButtons.length && portfolioFilterGroups.length) {
+    portfolioFilterButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            portfolioFilterButtons.forEach(function (b) { b.classList.remove('is-active'); });
+            btn.classList.add('is-active');
+
+            var filter = btn.getAttribute('data-filter');
+            portfolioFilterGroups.forEach(function (group) {
+                var matches = filter === 'all' || group.getAttribute('data-portfolio-group') === filter;
+                group.hidden = !matches;
+            });
+        });
+    });
+}
+
 // Cień nagłówka po przewinięciu
 var header = document.querySelector('.site-header');
 if (header) {

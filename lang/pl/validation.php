@@ -14,12 +14,14 @@ return [
         'numeric' => 'Pole :attribute nie może być większe niż :max.',
     ],
     'prohibited' => 'Pole :attribute jest niedozwolone.',
+    'array' => 'Pole :attribute musi być listą wartości.',
 
     'attributes' => [
         'name' => 'imię',
         'email' => 'e-mail',
         'phone' => 'telefon',
         'type' => 'rodzaj projektu',
+        'type.*' => 'rodzaj projektu',
         'message' => 'wiadomość',
         'website' => 'website',
     ],

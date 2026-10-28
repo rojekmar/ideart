@@ -358,6 +358,9 @@ a { color: inherit; text-decoration: none; }
     padding: 0.5rem 1.1rem;
     border-radius: 4px;
     font-size: 0.9rem;
+    font: inherit;
+    cursor: pointer;
+    background: transparent;
     color: var(--text-dim);
     border: 1px solid var(--border);
     white-space: nowrap;
@@ -371,6 +374,44 @@ a { color: inherit; text-decoration: none; }
     color: #14100a;
     background: var(--gold-grad);
     border-color: transparent;
+}
+
+/* ---------- Filtry portfolio (strona główna) ---------- */
+.portfolio-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+}
+
+/* ---------- Box procesu (przykładowy przebieg projektu hybrydowego) ---------- */
+.process-box {
+    margin-bottom: 2rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.process-box-title {
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dim);
+}
+.process-steps {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.92rem;
+}
+.process-steps li:not(:last-child)::after {
+    content: '\2192';
+    margin-left: 0.6rem;
+    color: var(--gold);
 }
 
 /* ---------- Sections ---------- */
@@ -397,11 +438,37 @@ a { color: inherit; text-decoration: none; }
 .section-text { color: var(--text-dim); font-size: 1.05rem; margin: 0 0 1rem; }
 .section-text:last-child { margin-bottom: 0; }
 
-/* ---------- Cards (oferta) ---------- */
+/* ---------- Trust bar (pod przyciskami hero) ---------- */
+.trust-bar {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1.8rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+}
+
+/* ---------- Cards (oferta, pakiety) ---------- */
 .cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
+}
+.packages {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+}
+.package-tags {
+    display: block;
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--gold-soft);
 }
 .card {
     position: relative;
@@ -527,11 +594,16 @@ a { color: inherit; text-decoration: none; }
 .facts strong { display: block; font-size: 1.35rem; font-family: var(--font-mono); color: var(--gold-soft); }
 .facts span { color: var(--text-dim); font-size: 0.9rem; }
 
-/* ---------- Reasons ---------- */
+/* ---------- Reasons / Benefits (O mnie) ---------- */
 .reasons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+}
+.benefits {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.75rem;
 }
 .reason {
     padding-left: 1.2rem;
@@ -937,6 +1009,31 @@ button.gallery-item:focus-visible {
     font-size: 0.85rem;
     color: var(--text-dim);
 }
+.contact-checkboxes {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    gap: 0.5rem;
+}
+.contact-checkboxes legend {
+    padding: 0 0 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+.contact-checkboxes .contact-checkbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.92rem;
+    color: var(--text);
+    cursor: pointer;
+}
+.contact-checkboxes .contact-checkbox input {
+    width: auto;
+    accent-color: var(--gold);
+}
 .contact-form input,
 .contact-form select,
 .contact-form textarea {
@@ -1033,6 +1130,10 @@ button.gallery-item:focus-visible {
     .about,
     .contact { grid-template-columns: 1fr; }
     .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+    .packages { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {

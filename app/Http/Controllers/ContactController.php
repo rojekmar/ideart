@@ -22,7 +22,8 @@ class ContactController extends Controller
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
             'phone' => ['nullable', 'string', 'max:40'],
-            'type' => ['required', 'string', 'max:60'],
+            'type' => ['required', 'array'],
+            'type.*' => ['string', 'max:60'],
             'message' => ['required', 'string', 'max:5000'],
             // Honeypot — puste pole niewidoczne dla ludzi (ukryte w CSS).
             // Boty wypełniające każde pole formularza się w nie złapią.
