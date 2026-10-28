@@ -20,7 +20,7 @@ return [
 
     'hero' => [
         'eyebrow' => 'Kompleksowe studio multimedialne',
-        'title' => 'Od pomysłu 3D po gotowy film. Wszystkie multimedia dla Twojego biznesu u jednego eksperta.',
+        'title' => 'Obrazy, które pracują na Twój sukces. Kompleksowa grafika 3D, 2D i fotografia w jednym miejscu.',
         'lead' => 'Zamiast szukać osobno grafika 3D, montażysty, fotografa i agencji reklamowej, powierz mi projekt w całości. Ponad 20 lat doświadczenia, zero pośredników i gwarancja spójności wizualnej.',
         'cta_primary' => 'Wyceń swój projekt',
         'cta_secondary' => 'Zobacz realizacje',
